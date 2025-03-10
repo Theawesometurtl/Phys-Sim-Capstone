@@ -24,8 +24,8 @@ export class Polygon {
         this.mass = 1
     }
     energyCalc() {
-        let kineticEnergy  = Math.abs((1/2)* this.momentOfInertia*this.rvelocity**2) + (1/2) * this.mass * Math.sqrt(this.velocity[0]**2 + this.velocity[1]**2)**2
-        let potentialEnergy = Math.abs((this.coords[1] - canvas.height) * gravity)  * this.mass
+        let kineticEnergy  = Math.abs((1/2)* this.momentOfInertia*this.rvelocity**2) + (1/4) * this.mass * Math.sqrt(this.velocity[0]**2 + this.velocity[1]**2)**2
+        let potentialEnergy = Math.abs((this.coords[1] - canvas.height) * gravity)  * this.mass 
         let netEnergy = kineticEnergy + potentialEnergy
         let text = "PotE: " + Math.floor(potentialEnergy)
         let text1 = "KinE: " + Math.floor(kineticEnergy)
@@ -76,10 +76,11 @@ export class Polygon {
         return [x,y]
         
     }
-    update() {
+    update(frames: number) {
+        
         this.velocity[1] -= gravity *2
-        this.coords[0] += this.velocity[0]
-        this.coords[1] += this.velocity[1]
+        this.coords[0] += this.velocity[0]*frames + (1/2) * gravity *frames**2
+        this.coords[1] += this.velocity[1]*frames + (1/2) * gravity *frames**2
         this.rotation += this.rvelocity
         if (this.rotation > Math.PI*2) {
             this.rotation -= Math.PI*2
@@ -99,14 +100,13 @@ export class Polygon {
                 } else {
                     rotForce = this.applyForce(this.absoluteVerticies[i], [0, this.rvelocity])
                 }
-
+                
                 // this.drawForce(rotForce, this.absoluteVerticies[i], 0.1, "red")
 
                 let netForce = [rotForce[0] - linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
                 console.log(this.velocity, netForce, rotForce, linForce, this.rvelocity, this.absoluteVerticies[i])
                 this.velocity[1] -= 2*netForce[1]
                 this.rvelocity += netForce[0]/(this.momentOfInertia)
-                
             }
             if (this.absoluteVerticies[i][0] + this.coords[0] < 0) {
                 this.coords[0] = 0 - this.absoluteVerticies[i][0]
