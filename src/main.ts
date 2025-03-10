@@ -1,10 +1,11 @@
 import './style.css'
 import { canvas, ctx, fps } from './constants';
 import { Polygon } from './polygon';
+import { rotateVector } from './rotateVector';
 
-let polygon: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0]],[100, 100])
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
+let polygon: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0]],[100, 100])
 let interval = setInterval(() => main(), 1000/fps)
 interval
 function main() {
