@@ -8,6 +8,7 @@ export class Polygon {
     rvelocity: number
     rotation: number
     absoluteVerticies: number[][]
+    mass: number
 
     constructor(relVertices: number[][], coords: number[], ) {
         this.relVertices = [...relVertices]
@@ -20,6 +21,22 @@ export class Polygon {
         this.rotation = 0
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
+        this.mass = 1
+    }
+    energyCalc() {
+        let kineticEnergy  = Math.abs((1/2)* this.momentOfInertia*this.rvelocity**2) + (1/2) * this.mass * Math.sqrt(this.velocity[0]**2 + this.velocity[1]**2)**2
+        let potentialEnergy = Math.abs((this.coords[1] - canvas.height) * gravity)  * this.mass
+        let netEnergy = kineticEnergy + potentialEnergy
+        let text = "PotE: " + Math.floor(potentialEnergy)
+        let text1 = "KinE: " + Math.floor(kineticEnergy)
+        let text2 = "Energy: " + Math.floor(netEnergy)
+        ctx.fillStyle = "white"
+        ctx.font = "40px Verdana"
+        
+        ctx.fillText(text, 300, 50, 1000)
+        ctx.fillText(text1, 300, 100, 1000)
+        ctx.fillText(text2, 300, 150, 1000)
+        return netEnergy
     }
     applyForce(forceDistance: number[], force: number[]) {
 
@@ -60,7 +77,7 @@ export class Polygon {
         
     }
     update() {
-        this.velocity[1] -= gravity
+        this.velocity[1] -= gravity *2
         this.coords[0] += this.velocity[0]
         this.coords[1] += this.velocity[1]
         this.rotation += this.rvelocity
