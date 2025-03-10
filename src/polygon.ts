@@ -16,7 +16,7 @@ export class Polygon {
         this.coords[0] += centroidAdjustment[0]
         this.coords[1] += centroidAdjustment[1]
         this.velocity = [0,0]
-        this.rvelocity =  1.75* Math.PI/100
+        this.rvelocity =  1* Math.PI/100
         this.rotation = 0
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
@@ -69,10 +69,9 @@ export class Polygon {
         } else if (this.rotation < 0) {
             this.rotation -= Math.PI*2
         }
-        let collision = false
         for (let i =0;i<this.relVertices.length; i++) {
             this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]])
-            if (this.absoluteVerticies[i][1] + this.coords[1] -5 > canvas.height && !collision) {
+            if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
                 this.coords[1] = canvas.height - this.absoluteVerticies[i][1]
                 let linForce = this.applyForce([...this.absoluteVerticies[i]], [0,this.velocity[1]])
                 let rotForce: number[] = []
@@ -86,11 +85,10 @@ export class Polygon {
 
                 // this.drawForce(rotForce, this.absoluteVerticies[i], 0.1, "red")
 
-                let netForce = [rotForce[0] + linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
+                let netForce = [rotForce[0] - linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
                 console.log(this.velocity, netForce, rotForce, linForce, this.rvelocity, this.absoluteVerticies[i])
                 this.velocity[1] -= 2*netForce[1]
                 this.rvelocity += netForce[0]/(this.momentOfInertia)
-                collision = true
                 
             }
             if (this.absoluteVerticies[i][0] + this.coords[0] < 0) {
