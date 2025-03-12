@@ -22,7 +22,36 @@ export class Polygon {
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
         this.mass = 1
+        
     }
+    getAABB() {
+        let xmax = this.coords[0]
+        let xmin = this.coords[0]
+        let ymax = this.coords[1]
+        let ymin = this.coords[1]
+        for (let i =0;i<this.relVertices.length; i++) {
+            if (this.absoluteVerticies[i][0] > xmax) {
+                xmax = this.absoluteVerticies[i][0]
+            }
+            if (this.absoluteVerticies[i][0] < xmin) {
+                xmin = this.absoluteVerticies[i][0]
+                
+            }
+            if (this.absoluteVerticies[i][1] > ymax) {
+                ymax = this.absoluteVerticies[i][1]
+                
+            }
+            if (this.absoluteVerticies[i][1] < ymin) {
+                ymin = this.absoluteVerticies[i][1]
+
+            }
+        }
+        return [[xmin, ymin], [xmax, ymax]]
+    }
+    linearVelocityOfPoint(point:number[], linearVelocity: number[], rotationalVelocity: number) {
+        let v = [point[0] * rotationalVelocity + linearVelocity[0], point[1] * rotationalVelocity + linearVelocity[1]]
+        return v
+    }   
     energyCalc() {
         let kineticEnergy  = Math.abs((1/2)* this.momentOfInertia*this.rvelocity**2) + (1/4) * this.mass * Math.sqrt(this.velocity[0]**2 + this.velocity[1]**2)**2
         let potentialEnergy = Math.abs((this.coords[1] - canvas.height) * gravity)  * this.mass 
@@ -88,25 +117,33 @@ export class Polygon {
             this.rotation -= Math.PI*2
         }
         for (let i =0;i<this.relVertices.length; i++) {
-            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]])
+            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]])}
+        //bounding box 
+        let AABB = this.getAABB()
+
+        for (let i =0;i<this.relVertices.length; i++) {
             if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
                 this.coords[1] = canvas.height - this.absoluteVerticies[i][1]
-                let linForce = this.applyForce([...this.absoluteVerticies[i]], [0,this.velocity[1]])
-                let rotForce: number[] = []
-                // rotForce = rotateVector(-Math.PI/2,[this.absoluteVerticies[i][0], this.absoluteVerticies[i][1]])
+                let v1 = this.linearVelocityOfPoint(this.absoluteVerticies[i], this.velocity, this.rvelocity)
+                let v2 = [0, 0]
+                let vf = [2*(v2[0] - v1[0]), 2*(v2[1] - v1[1])]
+                // vf = w*r + lin
+                // let linForce = this.applyForce([...this.absoluteVerticies[i]], [0,this.velocity[1]])
+                // let rotForce: number[] = []
+                // // rotForce = rotateVector(-Math.PI/2,[this.absoluteVerticies[i][0], this.absoluteVerticies[i][1]])
                 
-                if (this.absoluteVerticies[i][0] > 0) {
-                    rotForce = this.applyForce(this.absoluteVerticies[i], [0, -this.rvelocity])
-                } else {
-                    rotForce = this.applyForce(this.absoluteVerticies[i], [0, this.rvelocity])
-                }
+                // if (this.absoluteVerticies[i][0] > 0) {
+                //     rotForce = this.applyForce(this.absoluteVerticies[i], [0, -this.rvelocity])
+                // } else {
+                //     rotForce = this.applyForce(this.absoluteVerticies[i], [0, this.rvelocity])
+                // }
                 
-                // this.drawForce(rotForce, this.absoluteVerticies[i], 0.1, "red")
+                // // this.drawForce(rotForce, this.absoluteVerticies[i], 0.1, "red")
 
-                let netForce = [rotForce[0] - linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
-                console.log(this.velocity, netForce, rotForce, linForce, this.rvelocity, this.absoluteVerticies[i])
-                this.velocity[1] -= 2*netForce[1]
-                this.rvelocity += netForce[0]/(this.momentOfInertia)
+                // let netForce = [rotForce[0] - linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
+                // console.log(this.velocity, netForce, rotForce, linForce, this.rvelocity, this.absoluteVerticies[i])
+                // this.velocity[1] -= 2*netForce[1]
+                // this.rvelocity += netForce[0]/(this.momentOfInertia)
             }
             if (this.absoluteVerticies[i][0] + this.coords[0] < 0) {
                 this.coords[0] = 0 - this.absoluteVerticies[i][0]
