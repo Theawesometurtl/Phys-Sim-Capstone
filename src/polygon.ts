@@ -24,6 +24,26 @@ export class Polygon {
         this.mass = 1
         
     }
+    
+    getNormalVector(point1: number[], point2: number[]) {
+        
+        let x = point2[0] - point1[0]
+        let y = point2[1] - point1[1]
+        //y/x = m
+        //y = mx
+        //y**2 + x**2 = 1
+        return [[-y, x],[x/2 + point1[0] , y/2 + point1[1]]]
+    }
+    resolveContactStatic(staticVerticies: number[][]) {
+        //find contacts
+        for (let i=0; i< this.absoluteVerticies.length; i++) {
+            
+        }
+        //find most severe contact
+        for (let i=0; i< staticVerticies.length; i++) {
+            
+        }
+    }
     getAABB() {
         let xmax = this.coords[0]
         let xmin = this.coords[0]
@@ -35,18 +55,15 @@ export class Polygon {
             }
             if (this.absoluteVerticies[i][0] < xmin) {
                 xmin = this.absoluteVerticies[i][0]
-                
             }
             if (this.absoluteVerticies[i][1] > ymax) {
                 ymax = this.absoluteVerticies[i][1]
-                
             }
             if (this.absoluteVerticies[i][1] < ymin) {
                 ymin = this.absoluteVerticies[i][1]
-
             }
         }
-        return [[xmin, ymin], [xmax, ymax]]
+        return {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
     }
     linearVelocityOfPoint(point:number[], linearVelocity: number[], rotationalVelocity: number) {
         let v = [point[0] * rotationalVelocity + linearVelocity[0], point[1] * rotationalVelocity + linearVelocity[1]]
@@ -118,15 +135,25 @@ export class Polygon {
         }
         for (let i =0;i<this.relVertices.length; i++) {
             this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]])}
-        //bounding box 
-        let AABB = this.getAABB()
-
+            //bounding box 
+            let AABB = this.getAABB()
+            if (AABB.ymax > canvas.height) {
+                
+            }
+            if (AABB.xmin < 0) {
+                this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
+                this.velocity[0] *= -elasticity
+            }
+            if (AABB.xmax > canvas.width) {
+                
+                this.velocity[0] *= -elasticity
+            }
         for (let i =0;i<this.relVertices.length; i++) {
             if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
                 this.coords[1] = canvas.height - this.absoluteVerticies[i][1]
-                let v1 = this.linearVelocityOfPoint(this.absoluteVerticies[i], this.velocity, this.rvelocity)
-                let v2 = [0, 0]
-                let vf = [2*(v2[0] - v1[0]), 2*(v2[1] - v1[1])]
+                // let v1 = this.linearVelocityOfPoint(this.absoluteVerticies[i], this.velocity, this.rvelocity)
+                // let v2 = [0, 0]
+                // let vf = [2*(v2[0] - v1[0]), 2*(v2[1] - v1[1])]
                 // vf = w*r + lin
                 // let linForce = this.applyForce([...this.absoluteVerticies[i]], [0,this.velocity[1]])
                 // let rotForce: number[] = []
@@ -145,14 +172,6 @@ export class Polygon {
                 // this.velocity[1] -= 2*netForce[1]
                 // this.rvelocity += netForce[0]/(this.momentOfInertia)
             }
-            if (this.absoluteVerticies[i][0] + this.coords[0] < 0) {
-                this.coords[0] = 0 - this.absoluteVerticies[i][0]
-                this.velocity[0] *= -elasticity
-            }
-            if (this.absoluteVerticies[i][0] + this.coords[0] > canvas.width) {
-                this.coords[0] = canvas.width - this.absoluteVerticies[i][0]
-                this.velocity[0] *= -elasticity
-            }
         }
     }
     draw() {
@@ -164,7 +183,7 @@ export class Polygon {
         // ctx.closePath()
         // ctx.fillStyle = "red"
         // ctx.fill()
-        ctx.lineTo(this.absoluteVerticies[0][0] + this.coords[0],this.absoluteVerticies[0][1] + this.coords[1])
+        ctx.moveTo(this.absoluteVerticies[0][0] + this.coords[0],this.absoluteVerticies[0][1] + this.coords[1])
         ctx.beginPath()
         for (let i = 0;i< this.absoluteVerticies.length;i++) {
             ctx.lineTo(this.absoluteVerticies[i][0] + this.coords[0],this.absoluteVerticies[i][1] + this.coords[1])
@@ -174,6 +193,15 @@ export class Polygon {
         ctx.fill()
         ctx.fillStyle = "black"
         ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
+        ctx.fillStyle = "red"
+        ctx.fillRect(this.absoluteVerticies[0][0] + this.coords[0]-5, this.absoluteVerticies[0][1] + this.coords[1]-5, 10, 10)
+        ctx.fillRect(this.absoluteVerticies[1][0]  + this.coords[0]-5, this.absoluteVerticies[1][1] + this.coords[1]-5, 10, 10)
+        ctx.strokeStyle = "red"
+        ctx.beginPath()
+        let normal = this.getNormalVector(this.absoluteVerticies[0], this.absoluteVerticies[1])
+        ctx.moveTo(normal[0][0] + this.coords[0], normal[0][1] + this.coords[1])
+        ctx.lineTo(normal[1][0] + this.coords[0], normal[1][1] + this.coords[1])
+        ctx.stroke()
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
         ctx.lineWidth = 2
