@@ -2,5 +2,9 @@ let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasE
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 let gravity: number = -0.981
 let elasticity: number = 1
-let fps: number = 10
-export {canvas, ctx, gravity, fps, elasticity}
+let fps: number = 35
+let pressedKeys : {[keyCode: number]: boolean} = {};
+
+window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
+window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
+export {canvas, ctx, gravity, fps, elasticity, pressedKeys}

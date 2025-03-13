@@ -1,4 +1,4 @@
-import { canvas, ctx, elasticity, gravity } from "./constants"
+import { canvas, ctx, elasticity, gravity, pressedKeys } from "./constants"
 import { rotateVector } from "./rotateVector"
 export class Polygon {
     coords: number[]
@@ -35,13 +35,48 @@ export class Polygon {
         return [[-y, x],[x/2 + point1[0] , y/2 + point1[1]]]
     }
     resolveContactStatic(staticVerticies: number[][]) {
-        //find contacts
-        for (let i=0; i< this.absoluteVerticies.length; i++) {
-            
+        //find contacts using Seperating Axis Theorem
+        let contacts = []
+        for (let i=0;i<staticVerticies.length;i++) {
+            contacts.push(true)
         }
-        //find most severe contact
-        for (let i=0; i< staticVerticies.length; i++) {
+        let min = Infinity
+        let max = -Infinity
+        for (let i=0; i< this.absoluteVerticies.length; i++) {
+            min = Infinity
+            max = -Infinity
+            let normal = this.getNormalVector(this.absoluteVerticies[i], this.absoluteVerticies[(i+1)%this.absoluteVerticies.length])
+            //perform dot product on normal
+            //I'm treating the vertex's position as a position vector and crossing my fingers
+            for (let i=0; i< this.absoluteVerticies.length; i++) {
             
+                let thisDotProduct = normal[0][0] * staticVerticies[i][0] + normal[1][0] * staticVerticies[i][1]
+                //I just realized that I don't need to divide by the projected distance to compare
+                // vectors because everything is scaled by the projected distance
+                //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
+                if (thisDotProduct > max) {
+                    max = thisDotProduct
+                }
+                if (thisDotProduct < min) {
+                    min = thisDotProduct
+                }
+            }
+            for (let i=0; i< staticVerticies.length; i++) {
+                if (contacts[i]) {
+                    let thatDotProduct = normal[0][0] * staticVerticies[i][0] + normal[1][0] * staticVerticies[i][1]
+                    //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
+                    if (thatDotProduct < min || thatDotProduct > max){
+                        contacts[i] = false
+                    }
+                }
+            }
+        }
+        //find most severe contact in theory idk how so I don't care
+        //resolve contact
+        for (let i=0; i< staticVerticies.length; i++) {
+            if (!contacts[i]) {
+
+            }
         }
     }
     getAABB() {
@@ -50,17 +85,17 @@ export class Polygon {
         let ymax = this.coords[1]
         let ymin = this.coords[1]
         for (let i =0;i<this.relVertices.length; i++) {
-            if (this.absoluteVerticies[i][0] > xmax) {
-                xmax = this.absoluteVerticies[i][0]
+            if (this.absoluteVerticies[i][0] + this.coords[0]> xmax) {
+                xmax = this.absoluteVerticies[i][0] + this.coords[0]
             }
-            if (this.absoluteVerticies[i][0] < xmin) {
-                xmin = this.absoluteVerticies[i][0]
+            if (this.absoluteVerticies[i][0] + this.coords[0] < xmin) {
+                xmin = this.absoluteVerticies[i][0] + this.coords[0]
             }
-            if (this.absoluteVerticies[i][1] > ymax) {
-                ymax = this.absoluteVerticies[i][1]
+            if (this.absoluteVerticies[i][1] + this.coords[1] > ymax) {
+                ymax = this.absoluteVerticies[i][1] + this.coords[1]
             }
-            if (this.absoluteVerticies[i][1] < ymin) {
-                ymin = this.absoluteVerticies[i][1]
+            if (this.absoluteVerticies[i][1] + this.coords[1] < ymin) {
+                ymin = this.absoluteVerticies[i][1] + this.coords[1]
             }
         }
         return {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
@@ -123,10 +158,21 @@ export class Polygon {
         
     }
     update(frames: number) {
-        
-        this.velocity[1] -= gravity *2
-        this.coords[0] += this.velocity[0]*frames + (1/2) * gravity *frames**2
-        this.coords[1] += this.velocity[1]*frames + (1/2) * gravity *frames**2
+        if (pressedKeys[87]) {
+            this.coords[1] -= 2
+        }
+        if (pressedKeys[83]) {
+            this.coords[1] += 2
+        }
+        if (pressedKeys[65]) {
+            this.coords[0] -= 2
+        }
+        if (pressedKeys[68]) {
+            this.coords[0] += 2
+        }
+        // this.velocity[1] -= gravity *2
+        this.coords[0] += this.velocity[0]*frames
+        this.coords[1] += this.velocity[1]*frames
         this.rotation += this.rvelocity
         if (this.rotation > Math.PI*2) {
             this.rotation -= Math.PI*2
@@ -134,15 +180,16 @@ export class Polygon {
             this.rotation -= Math.PI*2
         }
         for (let i =0;i<this.relVertices.length; i++) {
-            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]])}
+            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
+        }
             //bounding box 
             let AABB = this.getAABB()
-            if (AABB.ymax > canvas.height) {
-                
-            }
             if (AABB.xmin < 0) {
                 this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
                 this.velocity[0] *= -elasticity
+            }
+            if (AABB.ymax > canvas.height) {
+                
             }
             if (AABB.xmax > canvas.width) {
                 
@@ -190,6 +237,13 @@ export class Polygon {
         }
         ctx.closePath()
         ctx.fillStyle = "blue"
+        let AABB = this.getAABB()
+        console.log(AABB)
+        if (AABB.xmin < 0) {
+            this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
+            this.velocity[0] *= -elasticity
+            ctx.fillStyle = "red"
+        }
         ctx.fill()
         ctx.fillStyle = "black"
         ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
