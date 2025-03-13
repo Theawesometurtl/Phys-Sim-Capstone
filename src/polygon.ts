@@ -26,7 +26,7 @@ export class Polygon {
     }
     
     getNormalVector(point1: number[], point2: number[]) {
-        
+        // the line goes out when points are clockwise, goes in when points are counterclockwise
         let x = point2[0] - point1[0]
         let y = point2[1] - point1[1]
         //y/x = m
@@ -193,8 +193,8 @@ export class Polygon {
         ctx.fill()
         ctx.fillStyle = "black"
         ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
-        ctx.fillStyle = "red"
         ctx.fillRect(this.absoluteVerticies[0][0] + this.coords[0]-5, this.absoluteVerticies[0][1] + this.coords[1]-5, 10, 10)
+        ctx.fillStyle = "red"
         ctx.fillRect(this.absoluteVerticies[1][0]  + this.coords[0]-5, this.absoluteVerticies[1][1] + this.coords[1]-5, 10, 10)
         ctx.strokeStyle = "red"
         ctx.beginPath()
