@@ -1,4 +1,4 @@
-import { canvas, ctx, elasticity, gravity, pressedKeys } from "./constants"
+import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyCoords } from "./constants"
 import { rotateVector } from "./rotateVector"
 export class Polygon {
     coords: number[]
@@ -9,8 +9,11 @@ export class Polygon {
     rotation: number
     absoluteVerticies: number[][]
     mass: number
+    playerControlled: boolean
+    static polygonAmount = 0
+    polygonNumber: number
 
-    constructor(relVertices: number[][], coords: number[], ) {
+    constructor(relVertices: number[][], coords: number[], playerControlled: boolean ) {
         this.relVertices = [...relVertices]
         this.coords = coords
         let centroidAdjustment = this.centroidCalc()
@@ -22,7 +25,10 @@ export class Polygon {
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
         this.mass = 1
-        
+        this.playerControlled = playerControlled
+        this.polygonNumber = Polygon.polygonAmount
+        Polygon.polygonAmount ++;
+        rigidbodyCoords[this.polygonNumber] = []
     }
     
     getNormalVector(point1: number[], point2: number[]) {
@@ -32,7 +38,7 @@ export class Polygon {
         //y/x = m
         //y = mx
         //y**2 + x**2 = 1
-        return [[-y, x],[x/2 + point1[0] , y/2 + point1[1]]]
+        return [[-y, x],[y, -x]]
     }
     resolveContactStatic(staticVerticies: number[][]) {
         //find contacts using Seperating Axis Theorem
@@ -158,6 +164,7 @@ export class Polygon {
         
     }
     update(frames: number) {
+        if (this.playerControlled) {
         if (pressedKeys[87]) {
             this.coords[1] -= 2
         }
@@ -169,7 +176,7 @@ export class Polygon {
         }
         if (pressedKeys[68]) {
             this.coords[0] += 2
-        }
+        }}
         // this.velocity[1] -= gravity *2
         this.coords[0] += this.velocity[0]*frames
         this.coords[1] += this.velocity[1]*frames
@@ -182,19 +189,24 @@ export class Polygon {
         for (let i =0;i<this.relVertices.length; i++) {
             this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
         }
+
             //bounding box 
-            let AABB = this.getAABB()
-            if (AABB.xmin < 0) {
-                this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
-                this.velocity[0] *= -elasticity
-            }
-            if (AABB.ymax > canvas.height) {
-                
-            }
-            if (AABB.xmax > canvas.width) {
-                
-                this.velocity[0] *= -elasticity
-            }
+        let AABB = this.getAABB()
+        
+
+        rigidbodyCoords[this.polygonNumber][0] = [[AABB.xmin, AABB.ymin],[AABB.ymin, AABB.ymax]]
+        rigidbodyCoords[this.polygonNumber][1] = this.absoluteVerticies
+        if (AABB.xmin < 0) {
+            this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
+            this.velocity[0] *= -elasticity
+        }
+        if (AABB.ymax > canvas.height) {
+            
+        }
+        if (AABB.xmax > canvas.width) {
+            
+            this.velocity[0] *= -elasticity
+        }
         for (let i =0;i<this.relVertices.length; i++) {
             if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
                 this.coords[1] = canvas.height - this.absoluteVerticies[i][1]
@@ -238,7 +250,6 @@ export class Polygon {
         ctx.closePath()
         ctx.fillStyle = "blue"
         let AABB = this.getAABB()
-        console.log(AABB)
         if (AABB.xmin < 0) {
             this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
             this.velocity[0] *= -elasticity

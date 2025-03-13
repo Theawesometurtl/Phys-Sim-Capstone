@@ -5,7 +5,8 @@ import { rotateVector } from './rotateVector';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
-let polygon: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0]],[200, 100])
+let polygon: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0]],[200, 100], true)
+let weirdShape: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0], [25, -100]],[400, 400], false)
 let interval = setInterval(() => main(), 1000/fps)
 interval
 function main() {
@@ -13,6 +14,8 @@ function main() {
   polygon.update(1)
   polygon.draw()
   polygon.energyCalc()
+  weirdShape.update(1)
+  weirdShape.draw()
   paint: Boolean;
   
   ctx.lineCap = 'round';
