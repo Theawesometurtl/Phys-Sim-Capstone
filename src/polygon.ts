@@ -207,6 +207,10 @@ export class Polygon {
             
             this.velocity[0] *= -elasticity
         }
+        
+        for (let i =0;i<rigidbodyCoords.length; i++) {
+
+        }
         for (let i =0;i<this.relVertices.length; i++) {
             if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
                 this.coords[1] = canvas.height - this.absoluteVerticies[i][1]
