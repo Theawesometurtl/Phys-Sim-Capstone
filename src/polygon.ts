@@ -9,6 +9,7 @@ export class Polygon {
     rotation: number
     absoluteVerticies: number[][]
     mass: number
+    linDrag: number
     playerControlled: boolean
     static polygonAmount = 0
     polygonNumber: number
@@ -25,12 +26,20 @@ export class Polygon {
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
         this.mass = 1
+        this.linDrag = 1
         this.playerControlled = playerControlled
         this.polygonNumber = Polygon.polygonAmount
         Polygon.polygonAmount ++;
         rigidbodyCoords[this.polygonNumber] = []
+        let AABB = this.getAABB()
+        rigidbodyCoords[this.polygonNumber][0] = [[AABB.xmin, AABB.ymin],[AABB.ymin, AABB.ymax]]
+        rigidbodyCoords[this.polygonNumber][1] = this.absoluteVerticies
     }
-    
+    velocityOfPoint(relativePoint: number[]) {
+        let instantaneousRotationVector = rotateVector(Math.PI/2, relativePoint)
+        let vOfPoint = [this.velocity[0] + instantaneousRotationVector[0] * -this.rvelocity, this.velocity[1]+ instantaneousRotationVector[1] *-this.rvelocity]
+        return vOfPoint
+    }
     getNormalVector(point1: number[], point2: number[]) {
         // the line goes out when points are clockwise, goes in when points are counterclockwise
         let x = point2[0] - point1[0]
@@ -43,7 +52,7 @@ export class Polygon {
     resolveContactStatic(staticVerticies: number[][]) {
         //find contacts using Seperating Axis Theorem
         let contacts = []
-        for (let i=0;i<staticVerticies.length;i++) {
+        for (let i=0;i<this.absoluteVerticies.length;i++) {
             contacts.push(true)
         }
         let min = Infinity
@@ -54,9 +63,9 @@ export class Polygon {
             let normal = this.getNormalVector(this.absoluteVerticies[i], this.absoluteVerticies[(i+1)%this.absoluteVerticies.length])
             //perform dot product on normal
             //I'm treating the vertex's position as a position vector and crossing my fingers
-            for (let i=0; i< this.absoluteVerticies.length; i++) {
+            for (let j=0; j< staticVerticies.length; j++) {
             
-                let thisDotProduct = normal[0][0] * staticVerticies[i][0] + normal[1][0] * staticVerticies[i][1]
+                let thisDotProduct = normal[0][0] * staticVerticies[j][0] + normal[1][0] * staticVerticies[j][1]
                 //I just realized that I don't need to divide by the projected distance to compare
                 // vectors because everything is scaled by the projected distance
                 //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
@@ -67,9 +76,9 @@ export class Polygon {
                     min = thisDotProduct
                 }
             }
-            for (let i=0; i< staticVerticies.length; i++) {
+            for (let j=0; j< this.absoluteVerticies.length; j++) {
                 if (contacts[i]) {
-                    let thatDotProduct = normal[0][0] * staticVerticies[i][0] + normal[1][0] * staticVerticies[i][1]
+                    let thatDotProduct = normal[0][0] * this.absoluteVerticies[j][0] + normal[1][0] * this.absoluteVerticies[j][1]
                     //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
                     if (thatDotProduct < min || thatDotProduct > max){
                         contacts[i] = false
@@ -79,9 +88,13 @@ export class Polygon {
         }
         //find most severe contact in theory idk how so I don't care
         //resolve contact
-        for (let i=0; i< staticVerticies.length; i++) {
+        for (let i=0; i< this.absoluteVerticies.length; i++) {
             if (!contacts[i]) {
-
+                let vOfPoint = this.velocityOfPoint(this.absoluteVerticies[i])
+                this.coords[0] -= vOfPoint[0]*1
+                this.coords[1] -= vOfPoint[1]*1
+                console.log("arg")
+                break
             }
         }
     }
@@ -166,20 +179,22 @@ export class Polygon {
     update(frames: number) {
         if (this.playerControlled) {
         if (pressedKeys[87]) {
-            this.coords[1] -= 2
+            this.coords[1] -= 4
         }
         if (pressedKeys[83]) {
-            this.coords[1] += 2
+            this.coords[1] += 4
         }
         if (pressedKeys[65]) {
-            this.coords[0] -= 2
+            this.coords[0] -= 4
         }
         if (pressedKeys[68]) {
-            this.coords[0] += 2
+            this.coords[0] += 4
         }}
         // this.velocity[1] -= gravity *2
         this.coords[0] += this.velocity[0]*frames
         this.coords[1] += this.velocity[1]*frames
+        this.velocity[0] *= this.linDrag
+        this.velocity[1] *= this.linDrag
         this.rotation += this.rvelocity
         if (this.rotation > Math.PI*2) {
             this.rotation -= Math.PI*2
@@ -189,16 +204,22 @@ export class Polygon {
         for (let i =0;i<this.relVertices.length; i++) {
             this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
         }
-
-            //bounding box 
+        
+        //bounding box 
         let AABB = this.getAABB()
         
-
+        
         rigidbodyCoords[this.polygonNumber][0] = [[AABB.xmin, AABB.ymin],[AABB.ymin, AABB.ymax]]
-        rigidbodyCoords[this.polygonNumber][1] = this.absoluteVerticies
+        rigidbodyCoords[this.polygonNumber][1] = []
+        for (let i =0;i<this.relVertices.length; i++) {
+            rigidbodyCoords[this.polygonNumber][1][i] = [
+            this.absoluteVerticies[i][0] + this.coords[0],
+            this.absoluteVerticies[i][1] + this.coords[1]]
+
+        }
+
         if (AABB.xmin < 0) {
             this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
-            this.velocity[0] *= -elasticity
         }
         if (AABB.ymax > canvas.height) {
             
@@ -209,7 +230,14 @@ export class Polygon {
         }
         
         for (let i =0;i<rigidbodyCoords.length; i++) {
-
+            if (i != this.polygonNumber) {
+                if ((AABB.xmin < rigidbodyCoords[i][0][0][0] && AABB.xmax > rigidbodyCoords[i][0][0][0]) ||(AABB.xmin < rigidbodyCoords[i][0][1][0] && AABB.xmax > rigidbodyCoords[i][0][1][0])){
+                
+                    if ((AABB.ymin < rigidbodyCoords[i][0][0][1] && AABB.ymax > rigidbodyCoords[i][0][0][1]) ||(AABB.ymin < rigidbodyCoords[i][0][1][1] && AABB.ymax > rigidbodyCoords[i][0][1][1])){
+                        this.resolveContactStatic(rigidbodyCoords[i][1])
+                    }
+                }
+            }
         }
         for (let i =0;i<this.relVertices.length; i++) {
             if (this.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
@@ -255,8 +283,6 @@ export class Polygon {
         ctx.fillStyle = "blue"
         let AABB = this.getAABB()
         if (AABB.xmin < 0) {
-            this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
-            this.velocity[0] *= -elasticity
             ctx.fillStyle = "red"
         }
         ctx.fill()
@@ -271,16 +297,23 @@ export class Polygon {
         ctx.moveTo(normal[0][0] + this.coords[0], normal[0][1] + this.coords[1])
         ctx.lineTo(normal[1][0] + this.coords[0], normal[1][1] + this.coords[1])
         ctx.stroke()
+        for (let i = 0;i< this.absoluteVerticies.length;i++) {
+            
+            let v = this.velocityOfPoint(this.absoluteVerticies[i])
+            this.drawForce(v, [this.absoluteVerticies[i][0] + this.coords[0],this.absoluteVerticies[i][1] + this.coords[1]], Math.sqrt(v[0]**2 + v[1]**2)*20,"purple")
+        }
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
-        ctx.lineWidth = 2
+        // ctx.lineWidth = 2
         ctx.strokeStyle = colour
-        ctx.lineTo(coordinate[0], coordinate[1])
+        ctx.fillStyle = colour
+        ctx.moveTo(coordinate[0]+2, coordinate[1]+2)
         ctx.beginPath()
-        ctx.lineTo(coordinate[0]+2, coordinate[1]+2)
+        ctx.lineTo(coordinate[0], coordinate[1])
         ctx.lineTo(force[0]*magnitude + coordinate[0], force[1]*magnitude + coordinate[1])
         ctx.lineTo(force[0]*magnitude + coordinate[0]+ 2, force[1]*magnitude + coordinate[1]+2)
         ctx.closePath()
+        ctx.fill()
         ctx.stroke()
 
     }
