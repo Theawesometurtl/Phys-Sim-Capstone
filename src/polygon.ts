@@ -13,6 +13,7 @@ export class Polygon {
     playerControlled: boolean
     static polygonAmount = 0
     polygonNumber: number
+    collision: boolean
 
     constructor(relVertices: number[][], coords: number[], playerControlled: boolean ) {
         this.relVertices = [...relVertices]
@@ -21,7 +22,7 @@ export class Polygon {
         this.coords[0] += centroidAdjustment[0]
         this.coords[1] += centroidAdjustment[1]
         this.velocity = [0,0]
-        this.rvelocity =  1* Math.PI/100
+        this.rvelocity =  -1* Math.PI/100
         this.rotation = 0
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
@@ -34,10 +35,11 @@ export class Polygon {
         let AABB = this.getAABB()
         rigidbodyCoords[this.polygonNumber][0] = [[AABB.xmin, AABB.ymin],[AABB.ymin, AABB.ymax]]
         rigidbodyCoords[this.polygonNumber][1] = this.absoluteVerticies
+        this.collision = false
     }
     velocityOfPoint(relativePoint: number[]) {
         let instantaneousRotationVector = rotateVector(Math.PI/2, relativePoint)
-        let vOfPoint = [this.velocity[0] + instantaneousRotationVector[0] * -this.rvelocity, this.velocity[1]+ instantaneousRotationVector[1] *-this.rvelocity]
+        let vOfPoint = [-this.velocity[0] + instantaneousRotationVector[0] * this.rvelocity, -this.velocity[1]+ instantaneousRotationVector[1] *this.rvelocity]
         return vOfPoint
     }
     getNormalVector(point1: number[], point2: number[]) {
@@ -47,7 +49,7 @@ export class Polygon {
         //y/x = m
         //y = mx
         //y**2 + x**2 = 1
-        return [[-y, x],[y, -x]]
+        return [[-y, x],[0, 0]]
     }
     resolveContactStatic(staticVerticies: number[][]) {
         //find contacts using Seperating Axis Theorem
@@ -94,6 +96,7 @@ export class Polygon {
                 this.coords[0] -= vOfPoint[0]*1
                 this.coords[1] -= vOfPoint[1]*1
                 console.log("arg")
+                this.collision = true
                 break
             }
         }
@@ -177,6 +180,7 @@ export class Polygon {
         
     }
     update(frames: number) {
+        this.collision = false
         if (this.playerControlled) {
         if (pressedKeys[87]) {
             this.coords[1] -= 4
@@ -281,8 +285,7 @@ export class Polygon {
         }
         ctx.closePath()
         ctx.fillStyle = "blue"
-        let AABB = this.getAABB()
-        if (AABB.xmin < 0) {
+        if (this.collision) {
             ctx.fillStyle = "red"
         }
         ctx.fill()
@@ -293,9 +296,13 @@ export class Polygon {
         ctx.fillRect(this.absoluteVerticies[1][0]  + this.coords[0]-5, this.absoluteVerticies[1][1] + this.coords[1]-5, 10, 10)
         ctx.strokeStyle = "red"
         ctx.beginPath()
-        let normal = this.getNormalVector(this.absoluteVerticies[0], this.absoluteVerticies[1])
-        ctx.moveTo(normal[0][0] + this.coords[0], normal[0][1] + this.coords[1])
-        ctx.lineTo(normal[1][0] + this.coords[0], normal[1][1] + this.coords[1])
+        let point1 = this.absoluteVerticies[3%this.absoluteVerticies.length]
+        let point2 = this.absoluteVerticies[4%this.absoluteVerticies.length]
+        let normal = this.getNormalVector(point1, point2)
+        let lineCenterx = (point1[0] + point2[0])/2
+        let lineCentery = (point1[1] + point2[1])/2
+        ctx.moveTo(normal[0][0] + this.coords[0] +lineCenterx, normal[0][1] + this.coords[1] +lineCentery)
+        ctx.lineTo(normal[1][0] + this.coords[0] +lineCenterx, normal[1][1] + this.coords[1] +lineCentery)
         ctx.stroke()
         for (let i = 0;i< this.absoluteVerticies.length;i++) {
             
