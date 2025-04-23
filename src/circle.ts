@@ -3,30 +3,37 @@ import { Rigidbody } from "./rigidbody"
 import { rotateVector } from "./rotateVector"
 export class Circle {
     // coords: number[]
-    relVertices: number[][]
     momentOfInertia: number
     mass: number
     AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
-    rigidbody: Rigidbody
+    rigidbody: Rigidbody | null
     radius: number
 
-    constructor(relVertices: number[][], rigidbody: Rigidbody) {
-        this.relVertices = [...relVertices]
-        this.rigidbody = rigidbody
+    constructor() {
+        this.rigidbody = null
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.mass = 1
         this.AABB = this.getAABB()
-        this.radius = 5
+        this.radius = 50
+    }
+    isPointWithinCircle(point: number[]): boolean {
+        let displacementFromCenter = Math.sqrt(Math.abs(point[0]- this.coords[0]) + Math.abs(point[1] - this.coords[1]))
+        return displacementFromCenter <= this.radius
     }
     update() {
 
     }
-
+    get coords() {
+        if (this.rigidbody === null) {
+            return [0, 0]
+        }
+        return this.rigidbody.coords
+    }
     getAABB() {
-        let xmax = this.rigidbody.coords[0] + this.radius
-        let xmin = this.rigidbody.coords[0] - this.radius
-        let ymax = this.rigidbody.coords[1] + this.radius
-        let ymin = this.rigidbody.coords[1] - this.radius
+        let xmax = this.coords[0] + this.radius
+        let xmin = this.coords[0] - this.radius
+        let ymax = this.coords[1] + this.radius
+        let ymin = this.coords[1] - this.radius
         
         this.AABB = {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
         return {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
@@ -34,26 +41,11 @@ export class Circle {
     momentOfInertiaCalc(): number { 
         return 5
     }
-    centroidCalc(): number[] {
-        let x: number = 0
-        let y: number = 0
-        for (let i =0;i<this.relVertices.length; i++) {
-            x+=this.relVertices[i][0]
-            y+=this.relVertices[i][1]
-        }
-        x = x/this.relVertices.length
-        y = y/this.relVertices.length
-        for (let i =0;i<this.relVertices.length; i++) {
-            this.relVertices[i][0] -= x
-            this.relVertices[i][1] -= y
-        }
-        return [x,y]
-        
-    }
+
     draw(collision: boolean) {
-        console.log(this.rigidbody.coords)
+        console.log(this.coords)
         ctx.beginPath();
-        ctx.arc(this.rigidbody.coords[0], this.rigidbody.coords[1], this.radius, 0, 2 * Math.PI);
+        ctx.arc(this.coords[0], this.coords[1], this.radius, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.fillStyle = "blue"
         if (collision) {
@@ -61,7 +53,7 @@ export class Circle {
         }
         ctx.fill()
         ctx.fillStyle = "black"
-        ctx.fillRect(this.rigidbody.coords[0], this.rigidbody.coords[1], 1, 1)
+        ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
         
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {

@@ -8,18 +8,28 @@ export class Polygon {
     absoluteVerticies: number[][]
     mass: number
     AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
-    rigidbody: Rigidbody
+    rigidbody: Rigidbody | null
 
-    constructor(relVertices: number[][], rigidbody: Rigidbody) {
+    constructor(relVertices: number[][]) {
         this.relVertices = [...relVertices]
-        this.rigidbody = rigidbody
-        let centroidAdjustment = this.centroidCalc()
-        this.rigidbody.coords[0] += centroidAdjustment[0]
-        this.rigidbody.coords[1] += centroidAdjustment[1]
+        this.centroidCalc()
+        this.rigidbody = null
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
         this.mass = 1
         this.AABB = this.getAABB()
+    }
+    get rotation() {
+        if (this.rigidbody === null) {
+            return 0
+        }
+        return this.rigidbody.rotation
+    }
+    get coords() {
+        if (this.rigidbody === null) {
+            return [0, 0]
+        }
+        return this.rigidbody.coords
     }
     update() {
         this.getAbsoluteVertices()
@@ -27,7 +37,7 @@ export class Polygon {
     }
     getAbsoluteVertices() {
         for (let i =0;i<this.relVertices.length; i++) {
-            this.absoluteVerticies[i] = rotateVector(this.rigidbody.rotation, [...this.relVertices[i]]) 
+            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
         }
         
     }
@@ -84,22 +94,22 @@ export class Polygon {
         return contacts
     }
     getAABB() {
-        let xmax = this.rigidbody.coords[0]
-        let xmin = this.rigidbody.coords[0]
-        let ymax = this.rigidbody.coords[1]
-        let ymin = this.rigidbody.coords[1]
+        let xmax = this.coords[0]
+        let xmin = this.coords[0]
+        let ymax = this.coords[1]
+        let ymin = this.coords[1]
         for (let i =0;i<this.relVertices.length; i++) {
-            if (this.absoluteVerticies[i][0] + this.rigidbody.coords[0]> xmax) {
-                xmax = this.absoluteVerticies[i][0] + this.rigidbody.coords[0]
+            if (this.absoluteVerticies[i][0] + this.coords[0]> xmax) {
+                xmax = this.absoluteVerticies[i][0] + this.coords[0]
             }
-            if (this.absoluteVerticies[i][0] + this.rigidbody.coords[0] < xmin) {
-                xmin = this.absoluteVerticies[i][0] + this.rigidbody.coords[0]
+            if (this.absoluteVerticies[i][0] + this.coords[0] < xmin) {
+                xmin = this.absoluteVerticies[i][0] + this.coords[0]
             }
-            if (this.absoluteVerticies[i][1] + this.rigidbody.coords[1] > ymax) {
-                ymax = this.absoluteVerticies[i][1] + this.rigidbody.coords[1]
+            if (this.absoluteVerticies[i][1] + this.coords[1] > ymax) {
+                ymax = this.absoluteVerticies[i][1] + this.coords[1]
             }
-            if (this.absoluteVerticies[i][1] + this.rigidbody.coords[1] < ymin) {
-                ymin = this.absoluteVerticies[i][1] + this.rigidbody.coords[1]
+            if (this.absoluteVerticies[i][1] + this.coords[1] < ymin) {
+                ymin = this.absoluteVerticies[i][1] + this.coords[1]
             }
         }
         this.AABB = {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
@@ -133,10 +143,10 @@ export class Polygon {
         // ctx.closePath()
         // ctx.fillStyle = "red"
         // ctx.fill()
-        ctx.moveTo(this.absoluteVerticies[0][0] + this.rigidbody.coords[0],this.absoluteVerticies[0][1] + this.rigidbody.coords[1])
+        ctx.moveTo(this.absoluteVerticies[0][0] + this.coords[0],this.absoluteVerticies[0][1] + this.coords[1])
         ctx.beginPath()
         for (let i = 0;i< this.absoluteVerticies.length;i++) {
-            ctx.lineTo(this.absoluteVerticies[i][0] + this.rigidbody.coords[0],this.absoluteVerticies[i][1] + this.rigidbody.coords[1])
+            ctx.lineTo(this.absoluteVerticies[i][0] + this.coords[0],this.absoluteVerticies[i][1] + this.coords[1])
         }
         ctx.closePath()
         ctx.fillStyle = "blue"
@@ -145,10 +155,10 @@ export class Polygon {
         }
         ctx.fill()
         ctx.fillStyle = "black"
-        ctx.fillRect(this.rigidbody.coords[0], this.rigidbody.coords[1], 1, 1)
-        ctx.fillRect(this.absoluteVerticies[0][0] + this.rigidbody.coords[0]-5, this.absoluteVerticies[0][1] + this.rigidbody.coords[1]-5, 10, 10)
+        ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
+        ctx.fillRect(this.absoluteVerticies[0][0] + this.coords[0]-5, this.absoluteVerticies[0][1] + this.coords[1]-5, 10, 10)
         ctx.fillStyle = "red"
-        ctx.fillRect(this.absoluteVerticies[1][0]  + this.rigidbody.coords[0]-5, this.absoluteVerticies[1][1] + this.rigidbody.coords[1]-5, 10, 10)
+        ctx.fillRect(this.absoluteVerticies[1][0]  + this.coords[0]-5, this.absoluteVerticies[1][1] + this.coords[1]-5, 10, 10)
         ctx.strokeStyle = "red"
         ctx.beginPath()
         let point1 = this.absoluteVerticies[3%this.absoluteVerticies.length]
@@ -156,8 +166,8 @@ export class Polygon {
         let normal = this.getNormalVector(point1, point2)
         let lineCenterx = (point1[0] + point2[0])/2
         let lineCentery = (point1[1] + point2[1])/2
-        ctx.moveTo(normal[0][0] + this.rigidbody.coords[0] +lineCenterx, normal[0][1] + this.rigidbody.coords[1] +lineCentery)
-        ctx.lineTo(normal[1][0] + this.rigidbody.coords[0] +lineCenterx, normal[1][1] + this.rigidbody.coords[1] +lineCentery)
+        ctx.moveTo(normal[0][0] + this.coords[0] +lineCenterx, normal[0][1] + this.coords[1] +lineCentery)
+        ctx.lineTo(normal[1][0] + this.coords[0] +lineCenterx, normal[1][1] + this.coords[1] +lineCentery)
         ctx.stroke()
         
     }

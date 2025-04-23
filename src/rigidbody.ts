@@ -1,3 +1,4 @@
+import { Circle } from "./circle"
 import { rigidbodyCollisionCheck } from "./collisions"
 import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyArray } from "./globals"
 import { Polygon } from "./polygon"
@@ -12,13 +13,14 @@ export class Rigidbody {
     static rigidbodyAmount = 0
     rigidbodyNumber: number
     collision: boolean
-    shape: Polygon 
+    shape: Polygon | Circle
     coords: number[]
     dynamic: boolean
 
-    constructor(relVertices: number[][], coords: number[], playerControlled: boolean, dynamic: boolean ) {
+    constructor(shape: Polygon|Circle,coords: number[], playerControlled: boolean, dynamic: boolean ) {
         this.coords = coords
-        this.shape = new Polygon(relVertices, this)
+        this.shape = shape
+        this.shape.rigidbody = this
         this.dynamic = dynamic
         this.velocity = [0,0]
         this.rvelocity =  -1* Math.PI/100
@@ -29,7 +31,6 @@ export class Rigidbody {
         this.rigidbodyNumber = Rigidbody.rigidbodyAmount
         Rigidbody.rigidbodyAmount ++;
         rigidbodyArray[this.rigidbodyNumber] = this
-        console.log(coords)
         this.collision = false
     }
 
