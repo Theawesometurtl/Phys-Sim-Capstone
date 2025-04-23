@@ -7,6 +7,7 @@ canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
 let polygon: Rigidbody = new Rigidbody([[0, 0],[0,50],[50,50],[50,0]],[200, 100], false, true)
 let weirdShape: Rigidbody = new Rigidbody([[0, 0],[0,50],[50,50],[50,0], [100, -100]],[400, 400], true, true)
+let circle: Rigidbody = new Rigidbody([[10, 10],[10, 0],[0,0],[0,10]], [100, 100], true, true)
 let canvasStaticBottom: Rigidbody = new Rigidbody([[0, canvas.height], [canvas.width, canvas.height], [canvas.width, canvas.height+100], [0, canvas.height+100]],[0,0],false,false)
 let canvasStaticLeft: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[0,0],false,false)
 let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
@@ -15,10 +16,12 @@ interval
 function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   polygon.update(1)
-  polygon.shape.draw(polygon.collision)
+  polygon.draw()
   polygon.energyCalc()
   weirdShape.update(1)
-  weirdShape.shape.draw(polygon.collision)
+  weirdShape.draw()
+  circle.update(1)
+  circle.draw()
   paint: Boolean;
   
   ctx.lineCap = 'round';

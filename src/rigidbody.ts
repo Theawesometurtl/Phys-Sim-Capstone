@@ -1,6 +1,6 @@
 import { rigidbodyCollisionCheck } from "./collisions"
-import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbody } from "./globals"
-import { Polygon } from "./polygonShape"
+import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyArray } from "./globals"
+import { Polygon } from "./polygon"
 import { rotateVector } from "./rotateVector"
 export class Rigidbody {
     velocity: number[]
@@ -28,8 +28,8 @@ export class Rigidbody {
         this.playerControlled = playerControlled
         this.rigidbodyNumber = Rigidbody.rigidbodyAmount
         Rigidbody.rigidbodyAmount ++;
-        rigidbody[this.rigidbodyNumber] = this
-
+        rigidbodyArray[this.rigidbodyNumber] = this
+        console.log(coords)
         this.collision = false
     }
 
@@ -82,18 +82,18 @@ export class Rigidbody {
     update(frames: number) {
         this.collision = false
         if (this.playerControlled) {
-        if (pressedKeys[87]) {
-            this.coords[1] -= 4
-        }
-        if (pressedKeys[83]) {
-            this.coords[1] += 4
-        }
-        if (pressedKeys[65]) {
-            this.coords[0] -= 4
-        }
-        if (pressedKeys[68]) {
-            this.coords[0] += 4
-        }}
+            if (pressedKeys[87]) {
+                this.coords[1] -= 4
+            }
+            if (pressedKeys[83]) {
+                this.coords[1] += 4
+            }
+            if (pressedKeys[65]) {
+                this.coords[0] -= 4
+            }
+            if (pressedKeys[68]) {
+                this.coords[0] += 4
+            }}
         // this.velocity[1] -= gravity *2
         this.coords[0] += this.velocity[0]*frames
         this.coords[1] += this.velocity[1]*frames
@@ -107,49 +107,24 @@ export class Rigidbody {
         }
 
         
-        //bounding box 
-        let AABB = this.shape.getAABB()
+        this.shape.update()
         
         
 
 
 
         
-        for (let i =0;i<rigidbody.length; i++) {
+        for (let i =0;i<rigidbodyArray.length; i++) {
             if (i != this.rigidbodyNumber) {
-                if ((AABB.xmin < rigidbody[i].shape.AABB.xmin && AABB.xmax > rigidbody[i].shape.AABB.xmin) ||(AABB.xmin < rigidbody[i].shape.AABB.xmax && AABB.xmax > rigidbody[i].shape.AABB.xmax)){
+                if ((this.shape.AABB.xmin < rigidbodyArray[i].shape.AABB.xmin && this.shape.AABB.xmax > rigidbodyArray[i].shape.AABB.xmin) ||(this.shape.AABB.xmin < rigidbodyArray[i].shape.AABB.xmax && this.shape.AABB.xmax > rigidbodyArray[i].shape.AABB.xmax)){
                 
-                    if ((AABB.ymin < rigidbody[i].shape.AABB.ymin && AABB.ymax > rigidbody[i].shape.AABB.ymin) ||(AABB.ymin < rigidbody[i].shape.AABB.ymax && AABB.ymax > rigidbody[i].shape.AABB.ymax)){
-                        rigidbodyCollisionCheck(rigidbody[i], this)
+                    if ((this.shape.AABB.ymin < rigidbodyArray[i].shape.AABB.ymin && this.shape.AABB.ymax > rigidbodyArray[i].shape.AABB.ymin) ||(this.shape.AABB.ymin < rigidbodyArray[i].shape.AABB.ymax && this.shape.AABB.ymax > rigidbodyArray[i].shape.AABB.ymax)){
+                        rigidbodyCollisionCheck(rigidbodyArray[i], this)
                     }
                 }
             }
         }
-        for (let i =0;i<this.shape.relVertices.length; i++) {
-            if (this.shape.absoluteVerticies[i][1] + this.coords[1] -0.5 > canvas.height) {
-                this.coords[1] = canvas.height - this.shape.absoluteVerticies[i][1]
-                // let v1 = this.linearVelocityOfPoint(this.absoluteVerticies[i], this.velocity, this.rvelocity)
-                // let v2 = [0, 0]
-                // let vf = [2*(v2[0] - v1[0]), 2*(v2[1] - v1[1])]
-                // vf = w*r + lin
-                // let linForce = this.applyForce([...this.absoluteVerticies[i]], [0,this.velocity[1]])
-                // let rotForce: number[] = []
-                // // rotForce = rotateVector(-Math.PI/2,[this.absoluteVerticies[i][0], this.absoluteVerticies[i][1]])
-                
-                // if (this.absoluteVerticies[i][0] > 0) {
-                //     rotForce = this.applyForce(this.absoluteVerticies[i], [0, -this.rvelocity])
-                // } else {
-                //     rotForce = this.applyForce(this.absoluteVerticies[i], [0, this.rvelocity])
-                // }
-                
-                // // this.drawForce(rotForce, this.absoluteVerticies[i], 0.1, "red")
 
-                // let netForce = [rotForce[0] - linForce[0], rotForce[1]*this.momentOfInertia + linForce[1]]
-                // console.log(this.velocity, netForce, rotForce, linForce, this.rvelocity, this.absoluteVerticies[i])
-                // this.velocity[1] -= 2*netForce[1]
-                // this.rvelocity += netForce[0]/(this.momentOfInertia)
-            }
-        }
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
         // ctx.lineWidth = 2
@@ -164,5 +139,8 @@ export class Rigidbody {
         ctx.fill()
         ctx.stroke()
 
+    }
+    draw() {
+        this.shape.draw(this.collision)
     }
 }

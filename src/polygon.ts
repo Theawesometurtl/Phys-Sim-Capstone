@@ -1,11 +1,10 @@
-import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbody } from "./globals"
+import { canvas, ctx} from "./globals"
 import { Rigidbody } from "./rigidbody"
 import { rotateVector } from "./rotateVector"
 export class Polygon {
     // coords: number[]
     relVertices: number[][]
     momentOfInertia: number
-    rotation: number
     absoluteVerticies: number[][]
     mass: number
     AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
@@ -17,15 +16,18 @@ export class Polygon {
         let centroidAdjustment = this.centroidCalc()
         this.rigidbody.coords[0] += centroidAdjustment[0]
         this.rigidbody.coords[1] += centroidAdjustment[1]
-        this.rotation = 0
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
         this.mass = 1
         this.AABB = this.getAABB()
     }
+    update() {
+        this.getAbsoluteVertices()
+        this.getAABB()
+    }
     getAbsoluteVertices() {
         for (let i =0;i<this.relVertices.length; i++) {
-            this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
+            this.absoluteVerticies[i] = rotateVector(this.rigidbody.rotation, [...this.relVertices[i]]) 
         }
         
     }

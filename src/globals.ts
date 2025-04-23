@@ -6,8 +6,8 @@ let gravity: number = -0.981
 let elasticity: number = 1
 let fps: number = 35
 let pressedKeys : {[keyCode: number]: boolean} = {};
-let rigidbody: Rigidbody[] = []
+let rigidbodyArray: Rigidbody[] = []
 
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
 window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
-export {canvas, ctx, gravity, fps, elasticity, pressedKeys, rigidbody}
+export {canvas, ctx, gravity, fps, elasticity, pressedKeys, rigidbodyArray}

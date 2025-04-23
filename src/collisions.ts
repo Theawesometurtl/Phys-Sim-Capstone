@@ -1,4 +1,4 @@
-import { Polygon } from "./polygonShape";
+import { Polygon } from "./polygon";
 import { Rigidbody } from "./rigidbody";
 import { vector } from "./types";
 
