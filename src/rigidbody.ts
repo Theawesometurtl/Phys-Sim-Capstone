@@ -1,4 +1,5 @@
-import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyCoords } from "./constants"
+import { rigidbodyCollisionCheck } from "./collisions"
+import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbody } from "./globals"
 import { Polygon } from "./polygonShape"
 import { rotateVector } from "./rotateVector"
 export class Rigidbody {
@@ -11,13 +12,14 @@ export class Rigidbody {
     static rigidbodyAmount = 0
     rigidbodyNumber: number
     collision: boolean
-    shape: Polygon
+    shape: Polygon 
     coords: number[]
+    dynamic: boolean
 
-    constructor(relVertices: number[][], coords: number[], playerControlled: boolean ) {
+    constructor(relVertices: number[][], coords: number[], playerControlled: boolean, dynamic: boolean ) {
         this.coords = coords
         this.shape = new Polygon(relVertices, this)
-        
+        this.dynamic = dynamic
         this.velocity = [0,0]
         this.rvelocity =  -1* Math.PI/100
         this.rotation = 0
@@ -26,9 +28,8 @@ export class Rigidbody {
         this.playerControlled = playerControlled
         this.rigidbodyNumber = Rigidbody.rigidbodyAmount
         Rigidbody.rigidbodyAmount ++;
-        rigidbodyCoords[this.rigidbodyNumber] = []
-        rigidbodyCoords[this.rigidbodyNumber][0] = [[this.shape.AABB.xmin, this.shape.AABB.ymin],[this.shape.AABB.ymin, this.shape.AABB.ymax]]
-        rigidbodyCoords[this.rigidbodyNumber][1] = this.shape.absoluteVerticies
+        rigidbody[this.rigidbodyNumber] = this
+
         this.collision = false
     }
 
@@ -37,55 +38,7 @@ export class Rigidbody {
         let vOfPoint = [-this.velocity[0] + instantaneousRotationVector[0] * this.rvelocity, -this.velocity[1]+ instantaneousRotationVector[1] *this.rvelocity]
         return vOfPoint
     }
-    resolveContactStatic(staticVerticies: number[][]) {
-        //find contacts using Seperating Axis Theorem
-        let contacts = []
-        for (let i=0;i<this.shape.absoluteVerticies.length;i++) {
-            contacts.push(true)
-        }
-        let min = Infinity
-        let max = -Infinity
-        for (let i=0; i< this.shape.absoluteVerticies.length; i++) {
-            min = Infinity
-            max = -Infinity
-            let normal = this.shape.getNormalVector(this.shape.absoluteVerticies[i], this.shape.absoluteVerticies[(i+1)%this.shape.absoluteVerticies.length])
-            //perform dot product on normal
-            //I'm treating the vertex's position as a position vector and crossing my fingers
-            for (let j=0; j< staticVerticies.length; j++) {
-            
-                let thisDotProduct = normal[0][0] * staticVerticies[j][0] + normal[1][0] * staticVerticies[j][1]
-                //I just realized that I don't need to divide by the projected distance to compare
-                // vectors because everything is scaled by the projected distance
-                //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
-                if (thisDotProduct > max) {
-                    max = thisDotProduct
-                }
-                if (thisDotProduct < min) {
-                    min = thisDotProduct
-                }
-            }
-            for (let j=0; j< this.shape.absoluteVerticies.length; j++) {
-                if (contacts[i]) {
-                    let thatDotProduct = normal[0][0] * this.shape.absoluteVerticies[j][0] + normal[1][0] * this.shape.absoluteVerticies[j][1]
-                    //let projectedDistance = dotProduct/Math.sqrt(normal[0][0]**2 + normal[0][0]**2)
-                    if (thatDotProduct < min || thatDotProduct > max){
-                        contacts[i] = false
-                    }
-                }
-            }
-        }
-        //find most severe contact in theory idk how so I don't care
-        //resolve contact
-        for (let i=0; i< this.shape.absoluteVerticies.length; i++) {
-            if (!contacts[i]) {
-                let vOfPoint = this.velocityOfPoint(this.shape.absoluteVerticies[i])
-                this.coords[0] -= vOfPoint[0]*1
-                this.coords[1] -= vOfPoint[1]*1
-                this.collision = true
-                break
-            }
-        }
-    }
+
 
     
     linearVelocityOfPoint(point:number[], linearVelocity: number[], rotationalVelocity: number) {
@@ -152,40 +105,22 @@ export class Rigidbody {
         } else if (this.rotation < 0) {
             this.rotation -= Math.PI*2
         }
-        for (let i =0;i<this.shape.relVertices.length; i++) {
-            this.shape.absoluteVerticies[i] = rotateVector(this.rotation, [...this.shape.relVertices[i]]) 
-        }
+
         
         //bounding box 
         let AABB = this.shape.getAABB()
         
         
-        rigidbodyCoords[this.rigidbodyNumber][0] = [[AABB.xmin, AABB.ymin],[AABB.ymin, AABB.ymax]]
-        rigidbodyCoords[this.rigidbodyNumber][1] = []
-        for (let i =0;i<this.shape.relVertices.length; i++) {
-            rigidbodyCoords[this.rigidbodyNumber][1][i] = [
-            this.shape.absoluteVerticies[i][0] + this.coords[0],
-            this.shape.absoluteVerticies[i][1] + this.coords[1]]
 
-        }
 
-        if (AABB.xmin < 0) {
-            this.resolveContactStatic([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]])
-        }
-        if (AABB.ymax > canvas.height) {
-            
-        }
-        if (AABB.xmax > canvas.width) {
-            
-            this.velocity[0] *= -elasticity
-        }
+
         
-        for (let i =0;i<rigidbodyCoords.length; i++) {
+        for (let i =0;i<rigidbody.length; i++) {
             if (i != this.rigidbodyNumber) {
-                if ((AABB.xmin < rigidbodyCoords[i][0][0][0] && AABB.xmax > rigidbodyCoords[i][0][0][0]) ||(AABB.xmin < rigidbodyCoords[i][0][1][0] && AABB.xmax > rigidbodyCoords[i][0][1][0])){
+                if ((AABB.xmin < rigidbody[i].shape.AABB.xmin && AABB.xmax > rigidbody[i].shape.AABB.xmin) ||(AABB.xmin < rigidbody[i].shape.AABB.xmax && AABB.xmax > rigidbody[i].shape.AABB.xmax)){
                 
-                    if ((AABB.ymin < rigidbodyCoords[i][0][0][1] && AABB.ymax > rigidbodyCoords[i][0][0][1]) ||(AABB.ymin < rigidbodyCoords[i][0][1][1] && AABB.ymax > rigidbodyCoords[i][0][1][1])){
-                        this.resolveContactStatic(rigidbodyCoords[i][1])
+                    if ((AABB.ymin < rigidbody[i].shape.AABB.ymin && AABB.ymax > rigidbody[i].shape.AABB.ymin) ||(AABB.ymin < rigidbody[i].shape.AABB.ymax && AABB.ymax > rigidbody[i].shape.AABB.ymax)){
+                        rigidbodyCollisionCheck(rigidbody[i], this)
                     }
                 }
             }

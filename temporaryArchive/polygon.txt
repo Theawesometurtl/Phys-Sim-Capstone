@@ -1,6 +1,6 @@
-import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyCoords } from "./constants"
+import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbody } from "./constants"
 import { rotateVector } from "./rotateVector"
-export class Polygon {
+class Polygon {
     coords: number[]
     relVertices: number[][]
     velocity: number[]

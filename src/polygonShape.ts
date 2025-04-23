@@ -1,4 +1,4 @@
-import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyCoords } from "./constants"
+import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbody } from "./globals"
 import { Rigidbody } from "./rigidbody"
 import { rotateVector } from "./rotateVector"
 export class Polygon {
@@ -27,6 +27,7 @@ export class Polygon {
         for (let i =0;i<this.relVertices.length; i++) {
             this.absoluteVerticies[i] = rotateVector(this.rotation, [...this.relVertices[i]]) 
         }
+        
     }
     getNormalVector(point1: number[], point2: number[]) {
         // the line goes out when points are clockwise, goes in when points are counterclockwise

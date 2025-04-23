@@ -1,16 +1,25 @@
 import './style.css'
-import { canvas, ctx, fps } from './constants';
-import { Polygon } from './polygon';
+import { canvas, ctx, fps } from './globals';
+import { Rigidbody } from './rigidbody';
+import { rotateVector } from './rotateVector';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
-let circle: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0]],[200, 100], false)
-let weirdShape: Polygon = new Polygon([[0, 0],[0,50],[50,50],[50,0], [100, -100]],[400, 400], true)
+let polygon: Rigidbody = new Rigidbody([[0, 0],[0,50],[50,50],[50,0]],[200, 100], false, true)
+let weirdShape: Rigidbody = new Rigidbody([[0, 0],[0,50],[50,50],[50,0], [100, -100]],[400, 400], true, true)
+let canvasStaticBottom: Rigidbody = new Rigidbody([[0, canvas.height], [canvas.width, canvas.height], [canvas.width, canvas.height+100], [0, canvas.height+100]],[0,0],false,false)
+let canvasStaticLeft: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[0,0],false,false)
+let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
 let interval = setInterval(() => main(), 1000/fps)
 interval
 function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
-
+  polygon.update(1)
+  polygon.shape.draw(polygon.collision)
+  polygon.energyCalc()
+  weirdShape.update(1)
+  weirdShape.shape.draw(polygon.collision)
+  paint: Boolean;
   
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
