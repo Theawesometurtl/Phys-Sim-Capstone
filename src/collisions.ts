@@ -1,24 +1,35 @@
 import { Circle } from "./circle";
+import { ctx } from "./globals";
 import { Polygon } from "./polygon";
 import { Rigidbody } from "./rigidbody";
-import { vector } from "./types";
+import { Vector, Matrix } from 'ts-matrix';
+
 
 
 export function rigidbodyCollisionCheck(rigidbody1: Rigidbody, rigidbody2: Rigidbody) {
     if (rigidbody1.shape instanceof Polygon && rigidbody2.shape instanceof Polygon) {
         polygonPolygon(rigidbody1, rigidbody1)
     } 
-
+    if (rigidbody1.shape instanceof Polygon && rigidbody2.shape instanceof Circle) {
+        polygonCircle(rigidbody1, rigidbody2, rigidbody1.shape, rigidbody2.shape)
+    } 
+    if (rigidbody1.shape instanceof Circle && rigidbody2.shape instanceof Polygon) {
+        polygonCircle(rigidbody1, rigidbody2, rigidbody2.shape, rigidbody1.shape)
+    } 
+    
 }
 function polygonPolygon(polygon1:Rigidbody, polygon2: Rigidbody) {
     
 }
-function polygonCircle(polygon: Polygon, circle: Circle) {
+function polygonCircle(polygonRigidbody: Rigidbody, circleRigidbody: Rigidbody, polygon: Polygon, circle: Circle) {
     //check whether a vertex is within the circle
     for (let i=0;i< polygon.absoluteVerticies.length;i++){
         if (circle.isPointWithinCircle(polygon.absoluteVerticies[i])) {
-
+            circleRigidbody.velocity[1] *= -1
+            circleRigidbody.collision = true
         }
+
+        let normal = polygon.getNormalVector(polygon.absoluteVerticies[i], polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length])
         //find slope of a line
         let slope = polygon.absoluteVerticies[i][1]-polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][1]/polygon.absoluteVerticies[i][0]-polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0]
         //find the perpindicular slope
@@ -44,23 +55,72 @@ function polygonCircle(polygon: Polygon, circle: Circle) {
         let y = x/invSlope
         //then we find if the lines intersect
 
-        let bias1 = circle.coords[1] - circle.coords[0]*invSlope
-        let bias2 = polygon.absoluteVerticies[i][1] - polygon.absoluteVerticies[i][1]* slope
-        //y = mx+b
-        //m1x + b1 = m2x+b2
-        //x(m1-m2) = b2-b1
-        //x = (b2-b1)/(m1-m2)
+        let bias1 = polygon.absoluteVerticies[i][1] - polygon.absoluteVerticies[i][1]* slope
+        let bias2 = circle.coords[1] - circle.coords[0]*invSlope
+        // y = mx+b
+        // m1x + b1 = m2x+b2
+        // x(m1-m2) = b2-b1
+        // x = (b2-b1)/(m1-m2)
         let intersectionx = (bias2-bias1)/(slope-invSlope)
+        let intersectiony = slope*intersectionx + bias2
         
         let isLine1AtIntersection = (intersectionx< circle.coords[0] && intersectionx > circle.coords[0] + x) || (intersectionx> circle.coords[0] && intersectionx < circle.coords[0] + x)
         let isLine2AtIntersection = (intersectionx< circle.coords[0] && intersectionx > circle.coords[0] - x) || (intersectionx> circle.coords[0] && intersectionx < circle.coords[0] - x)
         let isLine3AtIntersection = (intersectionx< polygon.absoluteVerticies[i][0] && intersectionx > polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0]) || (intersectionx> polygon.absoluteVerticies[i][0] && intersectionx < polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0])
         
+        ctx.strokeStyle = "red"
+        ctx.lineWidth = 5
+        ctx.beginPath()
+        ctx.moveTo(circle.coords[0], circle.coords[1])
+        ctx.lineTo(intersectionx, intersectiony)
+        ctx.stroke()
+        ctx.fillRect(intersectionx, intersectiony,50,50)
+        // console.log(intersectionx, intersectiony)
+        // ctx.beginPath()
+        // ctx.moveTo(circle.coords[0], circle.coords[1])
+        // ctx.lineTo(intersectionx, intersectiony)
+        // ctx.stroke()
+        // console.log(slope, bias1, bias2)
+
+        //find contacts using Seperating Axis Theorem
+
+        let normalVector = new Vector([normal[0][0] + polygon.coords[0], normal[0][1] + polygon.coords[1]])
+        let projectedLine = new Vector([polygon.absoluteVerticies[i][0] + polygon.coords[0], polygon.absoluteVerticies[i][1] + polygon.coords[1]]).dot(normalVector)
         if ((isLine1AtIntersection || isLine2AtIntersection) && isLine3AtIntersection) {
-            
+            circleRigidbody.velocity[1] *= -1
+            circleRigidbody.collision = true
+            // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
     }
 }
-function generalCollision(rigidbody: Rigidbody, point: number, force: vector) {
+function generalCollision(rigidbody1: Rigidbody|null, rigidbody2: Rigidbody|null, point: number[]) {
+    if (!(rigidbody1 instanceof Rigidbody) || !(rigidbody2 instanceof Rigidbody)) {
+        console.error("rigidbody attribute of shape is null");
+        stop()
+    }
+    //figure out momentum of point for each rigidbody
+    // rigidbody1?.
+
 
 }
+
+//took this from https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
+function intersects(point1: number[],point2: number[],point3: number[],point4:number[]) {
+    var det, gamma, lambda;
+    let a = point1[0]
+    let b = point1[1]
+    let c = point2[0]
+    let d = point2[1]
+    let p = point3[0]
+    let q = point3[1]
+    let r = point4[0]
+    let s = point4[1]
+    det = (c - a) * (s - q) - (r - p) * (d - b);
+    if (det === 0) {
+      return false;
+    } else {
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+  };

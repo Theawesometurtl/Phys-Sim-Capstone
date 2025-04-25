@@ -21,7 +21,7 @@ export class Circle {
         return displacementFromCenter <= this.radius
     }
     update() {
-
+        this.getAABB()
     }
     get coords() {
         if (this.rigidbody === null) {
@@ -43,7 +43,8 @@ export class Circle {
     }
 
     draw(collision: boolean) {
-        console.log(this.coords)
+        ctx.lineWidth = 2
+
         ctx.beginPath();
         ctx.arc(this.coords[0], this.coords[1], this.radius, 0, 2 * Math.PI);
         ctx.stroke();
@@ -55,6 +56,18 @@ export class Circle {
         ctx.fillStyle = "black"
         ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
         
+    }
+    drawBoundingBox() {
+        ctx.strokeStyle = "red"
+        ctx.lineWidth = 5
+
+        ctx.beginPath()
+        ctx.moveTo(this.AABB.xmin, this.AABB.ymin)
+        ctx.lineTo(this.AABB.xmin, this.AABB.ymax)
+        ctx.lineTo(this.AABB.xmax, this.AABB.ymax)
+        ctx.lineTo(this.AABB.xmax, this.AABB.ymin)
+        ctx.lineTo(this.AABB.xmin, this.AABB.ymin)
+        ctx.stroke()
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
         // ctx.lineWidth = 2

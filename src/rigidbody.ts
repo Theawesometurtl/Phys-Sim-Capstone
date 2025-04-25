@@ -16,19 +16,23 @@ export class Rigidbody {
     shape: Polygon | Circle
     coords: number[]
     dynamic: boolean
+    gravityTrue: boolean
 
-    constructor(shape: Polygon|Circle,coords: number[], playerControlled: boolean, dynamic: boolean ) {
+    constructor(shape: Polygon|Circle,coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+     ) {
         this.coords = coords
         this.shape = shape
         this.shape.rigidbody = this
         this.dynamic = dynamic
         this.velocity = [0,0]
-        this.rvelocity =  -1* Math.PI/100
+        // this.rvelocity =  -1* Math.PI/100
+        this.rvelocity =  0
         this.rotation = 0
         this.mass = 1
         this.linDrag = 1
         this.playerControlled = playerControlled
         this.rigidbodyNumber = Rigidbody.rigidbodyAmount
+        this.gravityTrue = gravityTrue
         Rigidbody.rigidbodyAmount ++;
         rigidbodyArray[this.rigidbodyNumber] = this
         this.collision = false
@@ -95,7 +99,8 @@ export class Rigidbody {
             if (pressedKeys[68]) {
                 this.coords[0] += 4
             }}
-        // this.velocity[1] -= gravity *2
+        if (this.gravityTrue)
+            {this.velocity[1] -= gravity *2}
         this.coords[0] += this.velocity[0]*frames
         this.coords[1] += this.velocity[1]*frames
         this.velocity[0] *= this.linDrag
@@ -110,7 +115,7 @@ export class Rigidbody {
         
         this.shape.update()
         
-        
+        // console.log(this.shape.AABB)
 
 
 
@@ -143,5 +148,6 @@ export class Rigidbody {
     }
     draw() {
         this.shape.draw(this.collision)
+        this.shape.drawBoundingBox()
     }
 }

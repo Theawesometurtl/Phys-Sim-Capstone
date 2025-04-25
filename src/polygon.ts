@@ -48,7 +48,11 @@ export class Polygon {
         //y/x = m
         //y = mx
         //y**2 + x**2 = 1
-        return [[-y, x],[0, 0]]
+
+        //normalize
+        let magnitude = Math.sqrt(y**2 + x**2)
+
+        return [[-y/magnitude, x/magnitude],[0, 0]]
     }
     FindSevereContacts(staticVerticies: number[][]):Boolean[]  { 
         //this function will find the contacts of our shape, and will return a list for which vertices are contacts
@@ -143,6 +147,7 @@ export class Polygon {
         // ctx.closePath()
         // ctx.fillStyle = "red"
         // ctx.fill()
+        ctx.lineWidth = 2
         ctx.moveTo(this.absoluteVerticies[0][0] + this.coords[0],this.absoluteVerticies[0][1] + this.coords[1])
         ctx.beginPath()
         for (let i = 0;i< this.absoluteVerticies.length;i++) {
@@ -166,8 +171,8 @@ export class Polygon {
         let normal = this.getNormalVector(point1, point2)
         let lineCenterx = (point1[0] + point2[0])/2
         let lineCentery = (point1[1] + point2[1])/2
-        ctx.moveTo(normal[0][0] + this.coords[0] +lineCenterx, normal[0][1] + this.coords[1] +lineCentery)
-        ctx.lineTo(normal[1][0] + this.coords[0] +lineCenterx, normal[1][1] + this.coords[1] +lineCentery)
+        ctx.moveTo(normal[0][0]*50 + this.coords[0] +lineCenterx, normal[0][1]*50 + this.coords[1] +lineCentery)
+        ctx.lineTo(normal[1][0]*50 + this.coords[0] +lineCenterx, normal[1][1]*50 + this.coords[1] +lineCentery)
         ctx.stroke()
         
     }
@@ -182,6 +187,18 @@ export class Polygon {
         ctx.lineTo(force[0]*magnitude + coordinate[0]+ 2, force[1]*magnitude + coordinate[1]+2)
         ctx.closePath()
         ctx.fill()
+        ctx.stroke()
+
+    }
+    drawBoundingBox() {
+        ctx.strokeStyle = "red"
+        ctx.lineWidth = 5
+        ctx.beginPath()
+        ctx.moveTo(this.AABB.xmin, this.AABB.ymin)
+        ctx.lineTo(this.AABB.xmin, this.AABB.ymax)
+        ctx.lineTo(this.AABB.xmax, this.AABB.ymax)
+        ctx.lineTo(this.AABB.xmax, this.AABB.ymin)
+        ctx.lineTo(this.AABB.xmin, this.AABB.ymin)
         ctx.stroke()
 
     }
