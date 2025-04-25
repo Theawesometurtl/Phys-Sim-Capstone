@@ -29,7 +29,7 @@ export class Rigidbody {
         this.rvelocity =  0
         this.rotation = 0
         this.mass = 1
-        this.linDrag = 1
+        this.linDrag = .999
         this.playerControlled = playerControlled
         this.rigidbodyNumber = Rigidbody.rigidbodyAmount
         this.gravityTrue = gravityTrue

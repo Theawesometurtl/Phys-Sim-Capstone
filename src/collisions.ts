@@ -14,7 +14,7 @@ export function rigidbodyCollisionCheck(rigidbody1: Rigidbody, rigidbody2: Rigid
         polygonCircle(rigidbody1, rigidbody2, rigidbody1.shape, rigidbody2.shape)
     } 
     if (rigidbody1.shape instanceof Circle && rigidbody2.shape instanceof Polygon) {
-        polygonCircle(rigidbody1, rigidbody2, rigidbody2.shape, rigidbody1.shape)
+        polygonCircle(rigidbody2, rigidbody1, rigidbody2.shape, rigidbody1.shape)
     } 
     
 }
@@ -84,16 +84,30 @@ function polygonCircle(polygonRigidbody: Rigidbody, circleRigidbody: Rigidbody, 
 
         //find contacts using Seperating Axis Theorem
 
-        let normalVector = new Vector([normal[0][0] + polygon.coords[0], normal[0][1] + polygon.coords[1]])
+        let normalVector = new Vector(normal[0])
         let projectedLine = new Vector([polygon.absoluteVerticies[i][0] + polygon.coords[0], polygon.absoluteVerticies[i][1] + polygon.coords[1]]).dot(normalVector)
-        if ((isLine1AtIntersection || isLine2AtIntersection) && isLine3AtIntersection) {
+        let projectedCircleCenter = new Vector(circle.coords).dot(normalVector)
+        if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
+            let hi = projectedLine + circle.radius - projectedCircleCenter
+            let hello = normalVector.scale(hi)
+            circleRigidbody.coords[0] += hello.values[0]
+            circleRigidbody.coords[1] += hello.values[1]
+            circleRigidbody.velocity[1] *= -1
+            circleRigidbody.collision = true
+            // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
+        }
+        if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
+            let hi = projectedLine - circle.radius - projectedCircleCenter
+            let hello = normalVector.scale(hi)
+            circleRigidbody.coords[0] += hello.values[0]
+            circleRigidbody.coords[1] += hello.values[1]
             circleRigidbody.velocity[1] *= -1
             circleRigidbody.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
     }
 }
-function generalCollision(rigidbody1: Rigidbody|null, rigidbody2: Rigidbody|null, point: number[]) {
+function generalCollision(rigidbody1: Rigidbody, rigidbody2: Rigidbody, point: number[]) {
     if (!(rigidbody1 instanceof Rigidbody) || !(rigidbody2 instanceof Rigidbody)) {
         console.error("rigidbody attribute of shape is null");
         stop()
