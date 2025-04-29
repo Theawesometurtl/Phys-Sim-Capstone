@@ -1,10 +1,11 @@
+import { Vector } from "ts-matrix"
 import { Circle } from "./circle"
 import { rigidbodyCollisionCheck } from "./collisions"
 import { canvas, ctx, elasticity, gravity, pressedKeys, rigidbodyArray } from "./globals"
 import { Polygon } from "./polygon"
 import { rotateVector } from "./rotateVector"
 export class Rigidbody {
-    velocity: number[]
+    velocity: Vector
     rvelocity: number
     rotation: number
     mass: number
@@ -14,17 +15,18 @@ export class Rigidbody {
     rigidbodyNumber: number
     collision: boolean
     shape: Polygon | Circle
-    coords: number[]
+    coords: Vector
     dynamic: boolean
     gravityTrue: boolean
+    momentum: Vector
 
     constructor(shape: Polygon|Circle,coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
-        this.coords = coords
+        this.coords = new Vector(coords)
         this.shape = shape
         this.shape.rigidbody = this
         this.dynamic = dynamic
-        this.velocity = [0,0]
+        this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.rvelocity =  0
         this.rotation = 0
@@ -36,11 +38,14 @@ export class Rigidbody {
         Rigidbody.rigidbodyAmount ++;
         rigidbodyArray[this.rigidbodyNumber] = this
         this.collision = false
+        this.momentum = this.velocity.scale(this.mass)
     }
-
+    get stateVector(){
+        return [this.coords, this.rotation, this.momentum]
+ }
     velocityOfPoint(relativePoint: number[]) {
         let instantaneousRotationVector = rotateVector(Math.PI/2, relativePoint)
-        let vOfPoint = [-this.velocity[0] + instantaneousRotationVector[0] * this.rvelocity, -this.velocity[1]+ instantaneousRotationVector[1] *this.rvelocity]
+        let vOfPoint = [-this.velocity.values[0] + instantaneousRotationVector[0] * this.rvelocity, -this.velocity.values[1]+ instantaneousRotationVector[1] *this.rvelocity]
         return vOfPoint
     }
 
@@ -51,8 +56,8 @@ export class Rigidbody {
         return v
     }   
     energyCalc() {
-        let kineticEnergy  = Math.abs((1/2)* this.shape.momentOfInertia*this.rvelocity**2) + (1/4) * this.mass * Math.sqrt(this.velocity[0]**2 + this.velocity[1]**2)**2
-        let potentialEnergy = Math.abs((this.coords[1] - canvas.height) * gravity)  * this.mass 
+        let kineticEnergy  = Math.abs((1/2)* this.shape.momentOfInertia*this.rvelocity**2) + (1/4) * this.mass * this.velocity.squaredLength()
+        let potentialEnergy = Math.abs((this.coords.values[1] - canvas.height) * gravity)  * this.mass 
         let netEnergy = kineticEnergy + potentialEnergy
         let text = "PotE: " + Math.floor(potentialEnergy)
         let text1 = "KinE: " + Math.floor(kineticEnergy)
@@ -88,23 +93,21 @@ export class Rigidbody {
         this.collision = false
         if (this.playerControlled) {
             if (pressedKeys[87]) {
-                this.coords[1] -= 4
+                this.coords.values[1] -= 4
             }
             if (pressedKeys[83]) {
-                this.coords[1] += 4
+                this.coords.values[1] += 4
             }
             if (pressedKeys[65]) {
-                this.coords[0] -= 4
+                this.coords.values[0] -= 4
             }
             if (pressedKeys[68]) {
-                this.coords[0] += 4
+                this.coords.values[0] += 4
             }}
         if (this.gravityTrue)
-            {this.velocity[1] -= gravity *2}
-        this.coords[0] += this.velocity[0]*frames
-        this.coords[1] += this.velocity[1]*frames
-        this.velocity[0] *= this.linDrag
-        this.velocity[1] *= this.linDrag
+            {this.velocity.values[1] -= gravity *2}
+        this.coords.add(this.velocity.scale(frames))
+        this.velocity.scale(this.linDrag)
         this.rotation += this.rvelocity
         if (this.rotation > Math.PI*2) {
             this.rotation -= Math.PI*2
