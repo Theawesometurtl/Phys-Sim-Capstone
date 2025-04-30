@@ -6,6 +6,9 @@ export class Graph {
     constructor() {
 
     }
+    clear() {
+        ctx2.clearRect(0, 0, canvas2.height, canvas2.width)
+    }
     drawAxes() {
         ctx2.lineWidth = 5
         ctx2.strokeStyle = "black"
@@ -15,8 +18,7 @@ export class Graph {
         ctx2.lineTo(canvas2.width, canvas2.height/2)
         ctx2.stroke()
     }
-    draw(callback: (x: number, y: number) => number[]) {
-        ctx2.clearRect(0, 0, canvas2.height, canvas2.width)
+    drawDifferential(callback: (x: number, y: number) => number[]) {
         this.drawAxes()
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let rows = 10
@@ -32,6 +34,20 @@ export class Graph {
                 dxdy = [dxdy[0]/dxdyMagnitude, dxdy[1]/dxdyMagnitude]
                 this.drawArrow(rowSpacing*i + rowSpacing/2, columnSpacing*j + columnSpacing/2, new Matrix(2,2,[[dxdy[0],0],[dxdy[1],0]]))
             }
+        }
+    }
+    drawEquation(callback: (x: number) => number) {
+
+        // this.drawArrow(300, 300, Math.PI, .5, 1)
+        let resolution = 100
+        let ySpacing = 100
+        let rowSpacing = canvas2.width/resolution
+
+        ctx2.beginPath() 
+        ctx2.moveTo(-resolution/2, callback(-resolution/2))
+        for (let i=-resolution/2; i< resolution/2; i++) {
+            let y = callback(i*-1 + canvas2.width/2)
+            ctx2.lineTo(i*resolution/canvas2.width, callback(i) + canvas2.height/2)
         }
     }
     plotPoint(x: number, y: number) {

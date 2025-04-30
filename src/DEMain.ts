@@ -23,7 +23,7 @@ let canvasStaticBottom = new PhysicsObject(canvasStaticBottomShape, canvasStatic
 // let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
 
 let graph = new Graph()
-graph.draw()
+// graph.draw(circleRB.dydt())
 
 let interval = setInterval(() => main(), 1000/fps)
 interval

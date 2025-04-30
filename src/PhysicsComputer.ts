@@ -5,7 +5,7 @@ coords: Vector
     constructor() {
         this.coords = new Vector([0,0])
     }
-    dydx() {
+    dydx() { 
         
     }
 }

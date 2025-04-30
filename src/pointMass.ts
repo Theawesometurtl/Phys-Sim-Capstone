@@ -1,30 +1,38 @@
 import { Vector } from "ts-matrix"
 import { rotateVector } from "./rotateVector"
+import { gravity } from "./globals"
 export class PointMass {
     velocity: Vector
+    force: Vector
     mass: number
+    invMass: number
     linDrag: number
-    coords: Vector
     momentum: Vector
 
-    constructor(coords: number[]
+    constructor(
      ) {
-        this.coords = new Vector(coords)
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
+        this.force = new Vector([0,0])
         this.mass = 1
+        this.invMass = this.mass**-1
         this.linDrag = .999
         this.momentum = this.velocity.scale(this.mass)
     }
-    get stateVector(){
-        return [this.coords, this.velocity]
- }
+
+    update() {
+        this.force = new Vector([0,-gravity*this.mass])
+    }
+
     velocityOfPoint(relativePoint: number[]) {
         let instantaneousRotationVector = rotateVector(Math.PI/2, relativePoint)
         let vOfPoint = [-this.velocity.values[0] + instantaneousRotationVector[0], -this.velocity.values[1]+ instantaneousRotationVector[1] ]
         return vOfPoint
     }
 
+    dydt(coords: Vector, velocity: Vector) {
+        return [velocity, this.force.scale(this.invMass)]
+    }
 
     
     linearVelocityOfPoint(point:number[], linearVelocity: number[], rotationalVelocity: number) {

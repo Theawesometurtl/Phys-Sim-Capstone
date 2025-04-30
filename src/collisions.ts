@@ -1,32 +1,31 @@
 import { Circle } from "./circle";
 import { ctx } from "./globals";
+import { PhysicsObject } from "./PhysicsObject";
 import { Polygon } from "./polygon";
-import { Rigidbody } from "./rigidbody";
 import { Vector, Matrix } from 'ts-matrix';
 
 
 
-export function rigidbodyCollisionCheck(rigidbody1: Rigidbody, rigidbody2: Rigidbody) {
-    if (rigidbody1.shape instanceof Polygon && rigidbody2.shape instanceof Polygon) {
-        polygonPolygon(rigidbody1, rigidbody1)
+export function rigidbodyCollisionCheck(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject) {
+    if (physicsObject1.shape instanceof Polygon && physicsObject2.shape instanceof Polygon) {
+        polygonPolygon(physicsObject1, physicsObject2)
     } 
-    if (rigidbody1.shape instanceof Polygon && rigidbody2.shape instanceof Circle) {
-        polygonCircle(rigidbody1, rigidbody2, rigidbody1.shape, rigidbody2.shape)
+    if (physicsObject1.shape instanceof Polygon && physicsObject2.shape instanceof Circle) {
+        polygonCircle(physicsObject1, physicsObject2, physicsObject1.shape, physicsObject2.shape)
     } 
-    if (rigidbody1.shape instanceof Circle && rigidbody2.shape instanceof Polygon) {
-        polygonCircle(rigidbody2, rigidbody1, rigidbody2.shape, rigidbody1.shape)
+    if (physicsObject1.shape instanceof Circle && physicsObject2.shape instanceof Polygon) {
+        polygonCircle(physicsObject2, physicsObject1, physicsObject2.shape, physicsObject1.shape)
     } 
     
 }
-function polygonPolygon(polygon1:Rigidbody, polygon2: Rigidbody) {
+function polygonPolygon(polygon1:PhysicsObject, polygon2: PhysicsObject) {
     
 }
-function polygonCircle(polygonRigidbody: Rigidbody, circleRigidbody: Rigidbody, polygon: Polygon, circle: Circle) {
+function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject: PhysicsObject, polygon: Polygon, circle: Circle) {
     //check whether a vertex is within the circle
     for (let i=0;i< polygon.absoluteVerticies.length;i++){
         if (circle.isPointWithinCircle(polygon.absoluteVerticies[i])) {
-            circleRigidbody.velocity[1] *= -1
-            circleRigidbody.collision = true
+
         }
 
         let normal = polygon.getNormalVector(polygon.absoluteVerticies[i], polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length])
@@ -90,30 +89,26 @@ function polygonCircle(polygonRigidbody: Rigidbody, circleRigidbody: Rigidbody, 
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
             let hi = projectedLine + circle.radius - projectedCircleCenter
             let hello = normalVector.scale(hi)
-            circleRigidbody.coords[0] += hello.values[0]
-            circleRigidbody.coords[1] += hello.values[1]
-            circleRigidbody.velocity[1] *= -1
-            circleRigidbody.collision = true
+
+            circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
             let hi = projectedLine - circle.radius - projectedCircleCenter
             let hello = normalVector.scale(hi)
-            circleRigidbody.coords[0] += hello.values[0]
-            circleRigidbody.coords[1] += hello.values[1]
-            circleRigidbody.velocity[1] *= -1
-            circleRigidbody.collision = true
+
+            circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
     }
 }
-function generalCollision(rigidbody1: Rigidbody, rigidbody2: Rigidbody, point: number[]) {
-    if (!(rigidbody1 instanceof Rigidbody) || !(rigidbody2 instanceof Rigidbody)) {
+function generalCollision(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject, point: number[]) {
+    if (!(physicsObject1 instanceof PhysicsObject) || !(physicsObject2 instanceof PhysicsObject)) {
         console.error("rigidbody attribute of shape is null");
         stop()
     }
     //figure out momentum of point for each rigidbody
-    // rigidbody1?.
+    // physicsObject1?.
 
 
 }
