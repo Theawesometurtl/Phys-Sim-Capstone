@@ -1,36 +1,23 @@
 import { canvas, ctx} from "./globals"
 import { Rigidbody } from "./rigidbody"
 import { rotateVector } from "./rotateVector"
-export class Polygon {
+import { Shape } from "./shape"
+export class Polygon extends Shape {
     // coords: number[]
     relVertices: number[][]
-    momentOfInertia: number
     absoluteVerticies: number[][]
-    mass: number
-    AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
-    rigidbody: Rigidbody | null
+    rotation: number
 
     constructor(relVertices: number[][]) {
+        super()
         this.relVertices = [...relVertices]
         this.centroidCalc()
-        this.rigidbody = null
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = [...relVertices]
-        this.mass = 1
         this.AABB = this.getAABB()
+        this.rotation = 0
     }
-    get rotation() {
-        if (this.rigidbody === null) {
-            return 0
-        }
-        return this.rigidbody.rotation
-    }
-    get coords() {
-        if (this.rigidbody === null) {
-            return [0, 0]
-        }
-        return this.rigidbody.coords
-    }
+
     update() {
         this.getAbsoluteVertices()
         this.getAABB()

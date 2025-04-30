@@ -1,18 +1,14 @@
 import { canvas, ctx} from "./globals"
 import { Rigidbody } from "./rigidbody"
 import { rotateVector } from "./rotateVector"
-export class Circle {
+import { Shape } from "./shape"
+export class Circle extends Shape {
     // coords: number[]
-    momentOfInertia: number
-    mass: number
-    AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
-    rigidbody: Rigidbody | null
     radius: number
 
     constructor() {
-        this.rigidbody = null
+        super()
         this.momentOfInertia = this.momentOfInertiaCalc()
-        this.mass = 1
         this.AABB = this.getAABB()
         this.radius = 50
     }
@@ -23,12 +19,7 @@ export class Circle {
     update() {
         this.getAABB()
     }
-    get coords() {
-        if (this.rigidbody === null) {
-            return [0, 0]
-        }
-        return this.rigidbody.coords
-    }
+
     getAABB() {
         let xmax = this.coords[0] + this.radius
         let xmin = this.coords[0] - this.radius
