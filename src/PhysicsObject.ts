@@ -4,6 +4,7 @@ import { rigidbodyCollisionCheck } from "./collisions"
 import { canvas, ctx, elasticity, gravity, pressedKeys } from "./globals"
 import { Polygon } from "./polygon"
 import { rotateVector } from "./rotateVector"
+import { Shape } from "./shape"
 export class  PhysicsObject {
     static PhysicsObjectAmount = 0
     velocity: Vector
@@ -12,13 +13,13 @@ export class  PhysicsObject {
     playerControlled: boolean
     physicsObjectNumber: number
     collision: boolean
-    shape: Circle
+    shape: Shape
     coords: Vector
     dynamic: boolean
     gravityTrue: boolean
     momentum: Vector
 
-    constructor(shape: Circle = new Circle(),coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(shape: Shape = new Circle(),coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
         this.coords = new Vector(coords)
         this.shape = shape

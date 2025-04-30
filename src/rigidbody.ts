@@ -10,24 +10,18 @@ export class Rigidbody {
     rotation: number
     mass: number
     linDrag: number
-    playerControlled: boolean
     coords: Vector
-    dynamic: boolean
-    gravityTrue: boolean
     momentum: Vector
 
-    constructor(coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(coords: number[]
      ) {
         this.coords = new Vector(coords)
-        this.dynamic = dynamic
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.rvelocity =  0
         this.rotation = 0
         this.mass = 1
         this.linDrag = .999
-        this.playerControlled = playerControlled
-        this.gravityTrue = gravityTrue
         this.momentum = this.velocity.scale(this.mass)
     }
     get stateVector(){

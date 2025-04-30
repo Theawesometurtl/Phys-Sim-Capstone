@@ -41,4 +41,10 @@ export class Shape {
         ctx.stroke()
 
     }
+    update() {
+
+    }
+    draw(collision: boolean) {
+
+    }
 }

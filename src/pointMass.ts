@@ -4,24 +4,16 @@ export class PointMass {
     velocity: Vector
     mass: number
     linDrag: number
-    playerControlled: boolean
-    collision: boolean
     coords: Vector
-    dynamic: boolean
-    gravityTrue: boolean
     momentum: Vector
 
-    constructor(coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(coords: number[]
      ) {
         this.coords = new Vector(coords)
-        this.dynamic = dynamic
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.mass = 1
         this.linDrag = .999
-        this.playerControlled = playerControlled
-        this.gravityTrue = gravityTrue
-        this.collision = false
         this.momentum = this.velocity.scale(this.mass)
     }
     get stateVector(){
