@@ -5,6 +5,7 @@ import { canvas, ctx, elasticity, gravity, pressedKeys } from "./globals"
 import { Polygon } from "./polygon"
 import { rotateVector } from "./rotateVector"
 import { Shape } from "./shape"
+import { PhysicsComputer } from "./PhysicsComputer"
 export class  PhysicsObject {
     static PhysicsObjectAmount = 0
     velocity: Vector
@@ -18,10 +19,12 @@ export class  PhysicsObject {
     dynamic: boolean
     gravityTrue: boolean
     momentum: Vector
+    computer: PhysicsComputer
 
-    constructor(shape: Shape = new Circle(),coords: number[], playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(shape: Shape = new Circle(), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
-        this.coords = new Vector(coords)
+        this.computer = computer
+        this.coords = computer.coords
         this.shape = shape
         this.dynamic = dynamic
         this.velocity = new Vector([0,0])

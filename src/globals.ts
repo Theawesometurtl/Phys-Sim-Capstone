@@ -1,3 +1,4 @@
+import { PhysicsObject } from "./PhysicsObject";
 import { Rigidbody } from "./rigidbody";
 
 let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement
@@ -6,8 +7,8 @@ let gravity: number = -0.981
 let elasticity: number = 1
 let fps: number = 35
 let pressedKeys : {[keyCode: number]: boolean} = {};
-let rigidbodyArray: Rigidbody[] = []
+let physicsObjectArray: PhysicsObject[] = []
 
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
 window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
-export {canvas, ctx, gravity, fps, elasticity, pressedKeys, rigidbodyArray}
+export {canvas, ctx, gravity, fps, elasticity, pressedKeys, physicsObjectArray}

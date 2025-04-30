@@ -4,7 +4,8 @@ import { rigidbodyCollisionCheck } from "./collisions"
 import { canvas, ctx, elasticity, gravity, pressedKeys} from "./globals"
 import { Polygon } from "./polygon"
 import { rotateVector } from "./rotateVector"
-export class Rigidbody {
+import { PhysicsComputer } from "./PhysicsComputer"
+export class Rigidbody extends PhysicsComputer {
     velocity: Vector
     rvelocity: number
     rotation: number
@@ -15,6 +16,7 @@ export class Rigidbody {
 
     constructor(coords: number[]
      ) {
+        super()
         this.coords = new Vector(coords)
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
