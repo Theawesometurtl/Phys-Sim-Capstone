@@ -11,7 +11,6 @@ canvas.width = window.innerWidth/2 - 100
 canvas.height = window.innerHeight/2 - 10
 let canvas2: HTMLCanvasElement = document.getElementById("canvas2") as HTMLCanvasElement
 let ctx2: CanvasRenderingContext2D = canvas2.getContext("2d") as CanvasRenderingContext2D;
-export {ctx2, canvas2}
 
 let circleShape = new Circle()
 let circleRB: Rigidbody = new Rigidbody([100, 100])
@@ -22,7 +21,7 @@ let canvasStaticBottom = new PhysicsObject(canvasStaticBottomShape, canvasStatic
 // let canvasStaticLeft: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[0,0],false,false)
 // let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
 
-let graph = new Graph()
+let graph = new Graph(canvas2, ctx2)
 // graph.draw(circleRB.dydt())
 
 let interval = setInterval(() => main(), 1000/fps)
