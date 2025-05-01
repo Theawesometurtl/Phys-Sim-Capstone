@@ -36,8 +36,5 @@ function main() {
 
     graph.drawODE(eulerStateVectorPredictor, "blue")
 
-  paint: Boolean;
-  
 
-  // ctx.fillRect(0,0,100,100)
 

@@ -65,14 +65,9 @@ export class  PhysicsObject {
         
         this.shape.update()
         
-        // console.log(this.shape.AABB)
-
-
-
-
     }
     drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
-        // ctx.lineWidth = 2
+        ctx.lineWidth = 2
         ctx.strokeStyle = colour
         ctx.fillStyle = colour
         ctx.moveTo(coordinate[0]+2, coordinate[1]+2)

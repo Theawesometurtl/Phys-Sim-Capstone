@@ -30,13 +30,6 @@ function main() {
   weird.draw()
   circle.update(1)
   circle.draw()
-  paint: Boolean;
-  
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = 'black';
-  ctx.lineWidth = 1;
-  ctx.fillStyle = "white"
-  // ctx.fillRect(0,0,100,100)
+
 
 }

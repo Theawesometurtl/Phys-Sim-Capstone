@@ -1,5 +1,5 @@
 import { Vector } from "ts-matrix"
-import { canvas, ctx, elasticity, gravity, pressedKeys} from "../globals"
+import { ctx} from "../globals"
 import { PhysicsComputer } from "./PhysicsComputer"
 export class Rigidbody extends PhysicsComputer {
     velocity: Vector

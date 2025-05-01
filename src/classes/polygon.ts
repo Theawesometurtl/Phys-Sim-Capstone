@@ -28,7 +28,7 @@ export class Polygon extends Shape {
 
         this.absoluteVerticies = rotMatrix.multiply(this.absoluteVerticies)
     }
-    getNormalVector(point1: number[], point2: number[]) {
+    getNormalVector(point1: number[], point2: number[]): Vector {
         // the line goes out when points are clockwise, goes in when points are counterclockwise
         let x = point2[0] - point1[0]
         let y = point2[1] - point1[1]
@@ -39,7 +39,7 @@ export class Polygon extends Shape {
         //normalize
         let magnitude = Math.sqrt(y**2 + x**2)
 
-        return [[-y/magnitude, x/magnitude],[0, 0]]
+        return new Vector([-y/magnitude, x/magnitude])
     }
 
     getAABB() {
@@ -86,14 +86,7 @@ export class Polygon extends Shape {
         
     }
     draw(collision: boolean) {
-        // ctx.lineTo(this.relVertices[0][0] + this.coords[0],this.relVertices[0][1] + this.coords[1])
-        // ctx.beginPath()
-        // for (let i = 0;i< this.relVertices.length;i++) {
-        //     ctx.lineTo(this.relVertices[i][0] + this.coords[0],this.relVertices[i][1] + this.coords[1])
-        // }
-        // ctx.closePath()
-        // ctx.fillStyle = "red"
-        // ctx.fill()
+
         
         ctx.lineWidth = 2
         ctx.moveTo(this.absoluteVerticies.values[0][0] + this.coords[0],this.absoluteVerticies.values[0][1] + this.coords[1])
@@ -116,11 +109,11 @@ export class Polygon extends Shape {
         ctx.beginPath()
         let point1 = this.absoluteVerticies.values[3%this.absoluteVerticies.columns]
         let point2 = this.absoluteVerticies.values[4%this.absoluteVerticies.columns]
-        let normal = this.getNormalVector(point1, point2)
+        let normal = this.getNormalVector(point1, point2).values
         let lineCenterx = (point1[0] + point2[0])/2
         let lineCentery = (point1[1] + point2[1])/2
-        ctx.moveTo(normal[0][0]*50 + this.coords[0] +lineCenterx, normal[0][1]*50 + this.coords[1] +lineCentery)
-        ctx.lineTo(normal[1][0]*50 + this.coords[0] +lineCenterx, normal[1][1]*50 + this.coords[1] +lineCentery)
+        ctx.moveTo(normal[0]*50 + this.coords[0] +lineCenterx, normal[1]*50 + this.coords[1] +lineCentery)
+        ctx.lineTo(this.coords[0] +lineCenterx, this.coords[1] +lineCentery)
         ctx.stroke()
         
     }

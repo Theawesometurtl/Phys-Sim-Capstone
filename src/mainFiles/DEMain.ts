@@ -32,13 +32,5 @@ function main() {
   circle.draw()
   canvasStaticBottom.draw()
   canvasStaticBottom.update(1)
-  paint: Boolean;
   
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = 'black';
-  ctx.lineWidth = 1;
-  ctx.fillStyle = "white"
-  // ctx.fillRect(0,0,100,100)
-
 }

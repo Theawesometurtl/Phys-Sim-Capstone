@@ -80,19 +80,18 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
 
         //find contacts using Seperating Axis Theorem
 
-        let normalVector = new Vector(normal[0])
-        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords[0], polygon.absoluteVerticies.values[i][1] + polygon.coords[1]]).dot(normalVector)
-        let projectedCircleCenter = new Vector(circle.coords).dot(normalVector)
+        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords[0], polygon.absoluteVerticies.values[i][1] + polygon.coords[1]]).dot(normal)
+        let projectedCircleCenter = new Vector(circle.coords).dot(normal)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
             let hi = projectedLine + circle.radius - projectedCircleCenter
-            let hello = normalVector.scale(hi)
+            let hello = normal.scale(hi)
 
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
             let hi = projectedLine - circle.radius - projectedCircleCenter
-            let hello = normalVector.scale(hi)
+            let hello = normal.scale(hi)
 
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
