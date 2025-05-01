@@ -1,10 +1,8 @@
 import { Vector } from "ts-matrix"
 import { Circle } from "./circle"
-import { rigidbodyCollisionCheck } from "./collisions"
-import { canvas, ctx, elasticity, gravity, pressedKeys } from "./globals"
-import { Polygon } from "./polygon"
-import { rotateVector } from "./rotateVector"
-import { Shape } from "./shape"
+import { canvas, ctx, elasticity, gravity, pressedKeys } from "../globals"
+
+import { Shape } from "./Shape"
 import { PhysicsComputer } from "./PhysicsComputer"
 export class  PhysicsObject {
     static PhysicsObjectAmount = 0
@@ -42,25 +40,7 @@ export class  PhysicsObject {
         return [this.coords, this.momentum]
     }
 
-    applyForce(forceDistance: number[], force: number[]) {
 
-        //let centerDistance = Math.sqrt(forceDistance[0]**2 + forceDistance[1]**2)
-        let centerAngle = Math.atan(forceDistance[0]/forceDistance[1])
-        //let forceMagnitude = Math.sqrt(force[0]**2 + force[1]**2)
-        //let forceAngle = Math.atan(force[1]/force[0])
-
-        //I'm gonna rotate everthing so that center distance is a vertical line, 
-        //and then I can break force into it's x and y components.
-        //doing this using rotation matrix:
-        // [cos, -sin]
-        // [sin, cos]
-        let rotatedForce = rotateVector(centerAngle, force)
-        let linearForce = rotatedForce[0]
-        let rotationForce = rotatedForce[1]
-        //the x components become linear acceleration 
-        //and the y components are rotational acceleration
-        return [linearForce, rotationForce]
-    }
     update(frames: number) {
         this.collision = false
         if (this.playerControlled) {

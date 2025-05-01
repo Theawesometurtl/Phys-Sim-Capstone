@@ -1,4 +1,6 @@
 import { Matrix, Vector } from "ts-matrix";
+import { OrdinaryDifferentialEquationSolver, StateVectorDerivatives as StateVectorAndTime, StateVectorPredictor } from "../odes";
+
 
 
 export class Graph {
@@ -20,7 +22,7 @@ export class Graph {
         this.ctx.lineTo(this.canvas.width, this.canvas.height/2)
         this.ctx.stroke()
     }
-    drawDifferential(callback: (x: number, y: number) => number[]) {
+    drawDifferential(callback: StateVectorAndTime, colour: string | CanvasGradient | CanvasPattern = "red") {
         this.drawAxes()
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let rows = 10
@@ -30,7 +32,7 @@ export class Graph {
 
         for (let i=0; i< rows; i++) {
             for (let j=0; j< columns; j++) {
-                let dxdy = callback(i*-1 + this.canvas.width/2,j*-1 + this.canvas.height/2)
+                let dxdy = callback([i*-1 + this.canvas.width/2],j*-1 + this.canvas.height/2)
                 //normalize dxdy
                 let dxdyMagnitude = Math.sqrt(dxdy[0]**2+dxdy[1]**2)
                 dxdy = [dxdy[0]/dxdyMagnitude, dxdy[1]/dxdyMagnitude]
@@ -38,7 +40,7 @@ export class Graph {
             }
         }
     }
-    drawEquation(callback: (x: number[]) => number[], colour: string = "red") {
+    drawEquation(callback: (x: number[]) => number[], colour: string | CanvasGradient | CanvasPattern = "red") {
 
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let resolution = 100
@@ -57,7 +59,7 @@ export class Graph {
         this.ctx.stroke()
         
     }
-    drawODE(ode: (y0: number[], len: number, t0: number, t1: number, dydtFunc: (x: number[]) => number[] ) => number[] , dydtFunc: (x: number[]) => number[],  colour: string = "red") {
+    drawODE(ode: StateVectorPredictor,  colour: string | CanvasGradient | CanvasPattern = "red") {
 
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let resolution = 100
@@ -71,14 +73,14 @@ export class Graph {
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
         let y: number = 0
         for (let i=0; i< resolution/2; i++) {
-            y -= ode([i],1,0,1,dydtFunc)[0]
+            y -= ode([i],1,0,1)[0]
             this.ctx.lineTo((i + resolution/2)*rowSpacing, y + this.canvas.height/2)
             console.log(y)
         }
         y = 0
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
         for (let i=0; i> -resolution/2; i--) {
-            y += ode([i],1,0,1,dydtFunc)[0]
+            y += ode([i],1,0,1)[0]
             this.ctx.lineTo((i + resolution/2)*rowSpacing, y + this.canvas.height/2)
             console.log(y)
         }

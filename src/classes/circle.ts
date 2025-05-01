@@ -1,7 +1,5 @@
-import { canvas, ctx} from "./globals"
-import { Rigidbody } from "./rigidbody"
-import { rotateVector } from "./rotateVector"
-import { Shape } from "./shape"
+import { canvas, ctx} from "../globals"
+import { Shape } from "./Shape"
 export class Circle extends Shape {
     // coords: number[]
     radius: number

@@ -1,17 +1,17 @@
 import './style.css'
-import { canvas, ctx, fps } from './globals';
-import { Rigidbody } from './rigidbody';
-import { rotateVector } from './rotateVector';
-import { Polygon } from './polygon';
-import { Circle } from './circle';
-import { PhysicsObject } from './PhysicsObject';
+import { canvas, ctx, fps } from '../globals';
+import { Rigidbody } from '../classes/rigidbody';
+import { Polygon } from '../classes/polygon';
+import { Circle } from '../classes/circle';
+import { PhysicsObject } from '../classes/PhysicsObject';
+import { Matrix } from 'ts-matrix';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
-let square = new Polygon([[0, 0],[0,50],[50,50],[50,0]])
+let square = new Polygon(new Matrix(2, 4, [[0, 0, 50, 50], [0, 50, 50, 0]]))
 let polygonRB: Rigidbody = new Rigidbody([200, 100])
 let polygon: PhysicsObject = new PhysicsObject(square, polygonRB, false, true, false)
-let weirdShape = new Polygon([[0, 0],[0,50],[50,50],[50,0], [100, -100]])
+let weirdShape = new Polygon(new Matrix(2, 5, [[0, 0,50,50,100],[0,50,50,0,-100]]))
 let weirdRB: Rigidbody = new Rigidbody([400, 400])
 let weird: PhysicsObject = new PhysicsObject(weirdShape,weirdRB, true, true, false)
 let circleShape = new Circle()

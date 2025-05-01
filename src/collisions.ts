@@ -1,7 +1,7 @@
-import { Circle } from "./circle";
+import { Circle } from "./classes/circle";
 import { ctx } from "./globals";
-import { PhysicsObject } from "./PhysicsObject";
-import { Polygon } from "./polygon";
+import { PhysicsObject } from "./classes/PhysicsObject";
+import { Polygon } from "./classes/polygon";
 import { Vector, Matrix } from 'ts-matrix';
 
 
@@ -23,14 +23,14 @@ function polygonPolygon(polygon1:PhysicsObject, polygon2: PhysicsObject) {
 }
 function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject: PhysicsObject, polygon: Polygon, circle: Circle) {
     //check whether a vertex is within the circle
-    for (let i=0;i< polygon.absoluteVerticies.length;i++){
-        if (circle.isPointWithinCircle(polygon.absoluteVerticies[i])) {
+    for (let i=0;i< polygon.absoluteVerticies.columns;i++){
+        if (circle.isPointWithinCircle(polygon.absoluteVerticies.values[i])) {
 
         }
 
-        let normal = polygon.getNormalVector(polygon.absoluteVerticies[i], polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length])
+        let normal = polygon.getNormalVector(polygon.absoluteVerticies.values[i], polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns])
         //find slope of a line
-        let slope = polygon.absoluteVerticies[i][1]-polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][1]/polygon.absoluteVerticies[i][0]-polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0]
+        let slope = polygon.absoluteVerticies.values[i][1]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][1]/polygon.absoluteVerticies.values[i][0]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][0]
         //find the perpindicular slope
         let invSlope = -(1/slope)
         //if a line from the center of the circle with a slope perpindicular to our line doesn't intersect
@@ -54,7 +54,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         let y = x/invSlope
         //then we find if the lines intersect
 
-        let bias1 = polygon.absoluteVerticies[i][1] - polygon.absoluteVerticies[i][1]* slope
+        let bias1 = polygon.absoluteVerticies.values[i][1] - polygon.absoluteVerticies.values[i][1]* slope
         let bias2 = circle.coords[1] - circle.coords[0]*invSlope
         // y = mx+b
         // m1x + b1 = m2x+b2
@@ -63,10 +63,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         let intersectionx = (bias2-bias1)/(slope-invSlope)
         let intersectiony = slope*intersectionx + bias2
         
-        let isLine1AtIntersection = (intersectionx< circle.coords[0] && intersectionx > circle.coords[0] + x) || (intersectionx> circle.coords[0] && intersectionx < circle.coords[0] + x)
-        let isLine2AtIntersection = (intersectionx< circle.coords[0] && intersectionx > circle.coords[0] - x) || (intersectionx> circle.coords[0] && intersectionx < circle.coords[0] - x)
-        let isLine3AtIntersection = (intersectionx< polygon.absoluteVerticies[i][0] && intersectionx > polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0]) || (intersectionx> polygon.absoluteVerticies[i][0] && intersectionx < polygon.absoluteVerticies[(i+1)%polygon.absoluteVerticies.length][0])
-        
+
         ctx.strokeStyle = "red"
         ctx.lineWidth = 5
         ctx.beginPath()
@@ -84,7 +81,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         //find contacts using Seperating Axis Theorem
 
         let normalVector = new Vector(normal[0])
-        let projectedLine = new Vector([polygon.absoluteVerticies[i][0] + polygon.coords[0], polygon.absoluteVerticies[i][1] + polygon.coords[1]]).dot(normalVector)
+        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords[0], polygon.absoluteVerticies.values[i][1] + polygon.coords[1]]).dot(normalVector)
         let projectedCircleCenter = new Vector(circle.coords).dot(normalVector)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
             let hi = projectedLine + circle.radius - projectedCircleCenter

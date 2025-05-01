@@ -1,7 +1,5 @@
-import { canvas, ctx} from "./globals"
-import { PhysicsObject } from "./PhysicsObject"
-import { Rigidbody } from "./rigidbody"
-import { rotateVector } from "./rotateVector"
+import { canvas, ctx} from "../globals"
+
 export class Shape {
     // coords: number[]
     momentOfInertia: number

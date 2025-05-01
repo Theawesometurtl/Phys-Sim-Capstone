@@ -1,9 +1,5 @@
 import './style.css'
-import { canvas, ctx, fps } from './globals';
-import { Rigidbody } from './rigidbody';
-import { rotateVector } from './rotateVector';
-import { Polygon } from './polygon';
-import { Circle } from './circle';
+import { canvas, ctx, fps } from '../globals';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10

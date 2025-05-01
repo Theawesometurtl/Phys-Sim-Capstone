@@ -1,5 +1,5 @@
-import { PhysicsObject } from "./PhysicsObject";
-import { Rigidbody } from "./rigidbody";
+import { PhysicsObject } from "./classes/PhysicsObject";
+import { Rigidbody } from "./classes/rigidbody";
 
 let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
