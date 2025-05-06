@@ -66,9 +66,9 @@ export class Graph {
         this.ctx.moveTo(-resolution/2, callback([-resolution/2])[0]- 10)
         for (let i=0; i< this.canvas.width; i+= rowSpacing) {
             let coords = this.posToCoordinate([i, 0])
-            console.log(coords)
             let y = callback([coords[0]])[0]*-1
             this.ctx.lineTo(i, y + this.canvas.height/2- 10)
+            // console.log(coords[0], y)
         }
         this.ctx.stroke()
         
@@ -77,7 +77,6 @@ export class Graph {
 
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let resolution = 1000
-        let ySpacing = 100
         let rowSpacing = this.canvas.width/(resolution)
 
         this.ctx.lineWidth = 3
@@ -86,18 +85,18 @@ export class Graph {
         this.ctx.beginPath() 
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
         let y: number = 10
-        let deltaT = this.posToCoordinate([this.canvas.width/2 + this.canvas.width/(2*resolution), 0])[0]
-        for (let i=0; i< this.canvas.width/2; i+=this.canvas.width/resolution) {
+        let deltaT = this.posToCoordinate([this.canvas.width/2 + this.canvas.width/(resolution), 0])[0]
+        for (let i=0; i< this.canvas.width/2; i+=deltaT) {
 
             y = ode([y],1,i,i+deltaT)[0]
-            this.ctx.lineTo((i + resolution/2)*rowSpacing, -y + this.canvas.height/2)
-            // console.log(y)
+            this.ctx.lineTo((i + this.canvas.width/2), -y + this.canvas.height/2)
+            console.log(i+ deltaT, deltaT, y, ((i+ deltaT) **2)/50 + 10)
         }
         y = 10
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
-        for (let i=-1; i> -this.canvas.width/2; i-=this.canvas.width/resolution) {
+        for (let i=-1; i> -this.canvas.width/2; i-=deltaT) {
         y = ode([y],1,i,i-deltaT)[0]
-            this.ctx.lineTo((i + resolution/2)*rowSpacing, -y + this.canvas.height/2)
+            this.ctx.lineTo((i + this.canvas.width/2), -y + this.canvas.height/2)
             // console.log(y)
         }
         this.ctx.stroke()

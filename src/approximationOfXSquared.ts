@@ -21,8 +21,8 @@ export function approximateXSquared(graph: Graph) {
     let modifiedEulerStateVectorPredictor: StateVectorPredictor = (y0: number[], len: number, t0: number, t1: number) => modifiedEuler(y0, len, t0, t1, dStateVector);
     let rungeKutta4thOrderStateVectorPredictor: StateVectorPredictor = (y0: number[], len: number, t0: number, t1: number) => rungeKutta4thOrder(y0, len, t0, t1, dStateVector);
     
-    graph.drawODE(eulerStateVectorPredictor, "green")
-    graph.drawODE(backwardsEulerStateVectorPredictor, "red")
-    graph.drawODE(modifiedEulerStateVectorPredictor, "yellow")
+    // graph.drawODE(eulerStateVectorPredictor, "green")
+    // graph.drawODE(backwardsEulerStateVectorPredictor, "red")
+    // graph.drawODE(modifiedEulerStateVectorPredictor, "yellow")
     graph.drawODE(rungeKutta4thOrderStateVectorPredictor, "blue")
 }
