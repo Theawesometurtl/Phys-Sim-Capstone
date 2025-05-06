@@ -17,9 +17,7 @@ export class Graph {
     posToCoordinate(pos: number[]): number[] {
         return [-this.canvas.width/2 + pos[0], this.canvas.height/2 -pos[1]]
     }
-    coordinateToPosition(coord: number[]): number[] {
-        return [-coord[0] + this.canvas.width/2, -coord[1] + this.canvas.height/2]
-    }
+
     clear() {
         this.ctx.clearRect(0, 0, this.canvas.height, this.canvas.width)
     }
@@ -45,9 +43,9 @@ export class Graph {
             for (let column=0; column< columns; column++) {
                 let pos = [rowSpacing*row + rowSpacing/2, columnSpacing*column + columnSpacing/2]
                 let coord = this.posToCoordinate(pos)
-                let dxdy = dxdyFunc([coord[0]], coord[1])
+                let dxdy = dxdyFunc(coord[0], [coord[1]])
                 //normalize dxdy
-                let rotation = (Math.atan2(50, -dxdy[0]*this.rotScale))
+                let rotation = (Math.atan2(5, -dxdy[0]*this.rotScale))
                 // console.log([row, column], [this.canvas.width, this.canvas.  height] ,pos, coord, dxdy, rotation)
                 // let dxdyMagnitude = Math.sqrt(dxdy[0]**2+(row*-1)**2)
                 // dxdy = [dxdy[0]*3/dxdyMagnitude, (row*-1)*3/dxdyMagnitude]
@@ -59,17 +57,18 @@ export class Graph {
 
         // this.drawArrow(300, 300, Math.PI, .5, 1)
         let resolution = 100
-        let ySpacing = 100
         let rowSpacing = this.canvas.width/resolution
 
         this.ctx.lineWidth = 3
         this.ctx.fillStyle = colour
         this.ctx.strokeStyle = colour
         this.ctx.beginPath() 
-        this.ctx.moveTo(-resolution/2, callback([-resolution/2])[0])
-        for (let i=-resolution/2; i< resolution/2; i++) {
-            let y = callback([i])[0]*-1
-            this.ctx.lineTo((i + resolution/2)*rowSpacing, y + this.canvas.height/2)
+        this.ctx.moveTo(-resolution/2, callback([-resolution/2])[0]- 10)
+        for (let i=0; i< this.canvas.width; i+= rowSpacing) {
+            let coords = this.posToCoordinate([i, 0])
+            console.log(coords)
+            let y = callback([coords[0]])[0]*-1
+            this.ctx.lineTo(i, y + this.canvas.height/2- 10)
         }
         this.ctx.stroke()
         
@@ -77,27 +76,29 @@ export class Graph {
     drawODE(ode: StateVectorPredictor,  colour: string | CanvasGradient | CanvasPattern = "red") {
 
         // this.drawArrow(300, 300, Math.PI, .5, 1)
-        let resolution = 250
+        let resolution = 1000
         let ySpacing = 100
-        let rowSpacing = this.canvas.width/resolution
+        let rowSpacing = this.canvas.width/(resolution)
 
         this.ctx.lineWidth = 3
         this.ctx.fillStyle = colour
         this.ctx.strokeStyle = colour
         this.ctx.beginPath() 
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
-        let y: number = 1
-        for (let i=0; i< this.canvas.height/2; i+=this.canvas.height/resolution) {
-            y = ode([y],1,i,i+1)[0]
+        let y: number = 10
+        let deltaT = this.posToCoordinate([this.canvas.width/2 + this.canvas.width/(2*resolution), 0])[0]
+        for (let i=0; i< this.canvas.width/2; i+=this.canvas.width/resolution) {
+
+            y = ode([y],1,i,i+deltaT)[0]
             this.ctx.lineTo((i + resolution/2)*rowSpacing, -y + this.canvas.height/2)
-            console.log(y)
+            // console.log(y)
         }
-        y = 1
+        y = 10
         this.ctx.moveTo(this.canvas.width/2, this.canvas.height/2)
-        for (let i=0; i> -this.canvas.height/2; i-=this.canvas.height/resolution) {
-            y = ode([y],1,i,i+1)[0]
+        for (let i=-1; i> -this.canvas.width/2; i-=this.canvas.width/resolution) {
+        y = ode([y],1,i,i-deltaT)[0]
             this.ctx.lineTo((i + resolution/2)*rowSpacing, -y + this.canvas.height/2)
-            console.log(y)
+            // console.log(y)
         }
         this.ctx.stroke()
         
