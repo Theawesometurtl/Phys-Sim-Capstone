@@ -1,4 +1,4 @@
-import './style.css'
+import '../css/style.css'
 import { canvas, ctx, fps } from '../globals';
 import { Rigidbody } from '../classes/rigidbody';
 import { Polygon } from '../classes/polygon';

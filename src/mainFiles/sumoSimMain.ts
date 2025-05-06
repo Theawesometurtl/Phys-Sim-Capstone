@@ -1,4 +1,4 @@
-import './style.css'
+import '../css/style.css'
 import { canvas, ctx, fps } from '../globals';
 
 canvas.width = window.innerWidth - 100
