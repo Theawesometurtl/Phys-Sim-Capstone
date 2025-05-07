@@ -55,7 +55,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         //then we find if the lines intersect
 
         let bias1 = polygon.absoluteVerticies.values[i][1] - polygon.absoluteVerticies.values[i][1]* slope
-        let bias2 = circle.coords[1] - circle.coords[0]*invSlope
+        let bias2 = circle.coords.values[1] - circle.coords.values[0]*invSlope
         // y = mx+b
         // m1x + b1 = m2x+b2
         // x(m1-m2) = b2-b1
@@ -67,7 +67,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         ctx.strokeStyle = "red"
         ctx.lineWidth = 5
         ctx.beginPath()
-        ctx.moveTo(circle.coords[0], circle.coords[1])
+        ctx.moveTo(circle.coords.values[0], circle.coords.values[1])
         ctx.lineTo(intersectionx, intersectiony)
         ctx.stroke()
         ctx.fillRect(intersectionx, intersectiony,50,50)
@@ -80,8 +80,8 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
 
         //find contacts using Seperating Axis Theorem
 
-        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords[0], polygon.absoluteVerticies.values[i][1] + polygon.coords[1]]).dot(normal)
-        let projectedCircleCenter = new Vector(circle.coords).dot(normal)
+        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords.values[0], polygon.absoluteVerticies.values[i][1] + polygon.coords.values[1]]).dot(normal)
+        let projectedCircleCenter = new Vector(circle.coords.values).dot(normal)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
             let hi = projectedLine + circle.radius - projectedCircleCenter
             let hello = normal.scale(hi)

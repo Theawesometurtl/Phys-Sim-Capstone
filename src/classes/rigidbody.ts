@@ -7,13 +7,10 @@ export class Rigidbody extends PhysicsComputer {
     rotation: number
     mass: number
     linDrag: number
-    coords: Vector
     momentum: Vector
 
-    constructor(coords: number[]
-     ) {
-        super()
-        this.coords = new Vector(coords)
+    constructor(coords: Vector) {
+        super(coords)
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.rvelocity =  0

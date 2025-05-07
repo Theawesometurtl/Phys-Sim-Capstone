@@ -35,6 +35,9 @@ export class  PhysicsObject {
         PhysicsObject.PhysicsObjectAmount ++;
         this.collision = false
         this.momentum = this.velocity.scale(this.mass)
+        let adjustment = shape.centroidCalc()
+        this.coords.values[0] += adjustment[0]
+        this.coords.values[1] += adjustment[1]
     }
     get stateVector(){
         return [this.coords, this.momentum]
@@ -58,29 +61,20 @@ export class  PhysicsObject {
             }}
         if (this.gravityTrue)
             {this.velocity.values[1] -= gravity *2}
-        this.coords.add(this.velocity.scale(frames))
-        this.velocity.scale(this.linDrag)
-
-
+        
+        
         
         this.shape.update()
-        
+        this.computer.force = new Vector([0,-gravity*this.mass*1000])
+        let y0 = this.computer.stateVectorsToArray()
+        let y1 = this.computer.ode(y0, 4,0,1)
+        this.computer.arrayToStateVectors(y1)
+        this.coords = this.computer.coords
+            
     }
-    drawForce(force: number[], coordinate: number[], magnitude: number, colour: string) {
-        ctx.lineWidth = 2
-        ctx.strokeStyle = colour
-        ctx.fillStyle = colour
-        ctx.moveTo(coordinate[0]+2, coordinate[1]+2)
-        ctx.beginPath()
-        ctx.lineTo(coordinate[0], coordinate[1])
-        ctx.lineTo(force[0]*magnitude + coordinate[0], force[1]*magnitude + coordinate[1])
-        ctx.lineTo(force[0]*magnitude + coordinate[0]+ 2, force[1]*magnitude + coordinate[1]+2)
-        ctx.closePath()
-        ctx.fill()
-        ctx.stroke()
 
-    }
     draw() {
+        this.shape.coords = this.coords
         this.shape.draw(this.collision)
         this.shape.drawBoundingBox()
     }

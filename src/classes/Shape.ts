@@ -1,15 +1,16 @@
+import { Vector } from "ts-matrix"
 import { canvas, ctx} from "../globals"
 
 export class Shape {
     // coords: number[]
     momentOfInertia: number
     AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
-    coords: number[]
+    coords: Vector
 
     constructor() {
         this.momentOfInertia = 1
         this.AABB = {xmin: 1, xmax:1, ymin:1, ymax:1}
-        this.coords = [0, 0]
+        this.coords = new Vector([0, 0])
     }
 
 
@@ -44,5 +45,8 @@ export class Shape {
     }
     draw(collision: boolean) {
 
+    }
+    centroidCalc() {
+        return [0,0]
     }
 }

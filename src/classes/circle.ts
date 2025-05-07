@@ -11,7 +11,8 @@ export class Circle extends Shape {
         this.radius = 50
     }
     isPointWithinCircle(point: number[]): boolean {
-        let displacementFromCenter = Math.sqrt(Math.abs(point[0]- this.coords[0]) + Math.abs(point[1] - this.coords[1]))
+        let coordArray = this.coords.values
+        let displacementFromCenter = Math.sqrt(Math.abs(point[0]- coordArray[0]) + Math.abs(point[1] - coordArray[1]))
         return displacementFromCenter <= this.radius
     }
     update() {
@@ -19,10 +20,12 @@ export class Circle extends Shape {
     }
 
     getAABB() {
-        let xmax = this.coords[0] + this.radius
-        let xmin = this.coords[0] - this.radius
-        let ymax = this.coords[1] + this.radius
-        let ymin = this.coords[1] - this.radius
+        let coordArray = this.coords.values
+
+        let xmax = coordArray[0] + this.radius
+        let xmin = coordArray[0] - this.radius
+        let ymax = coordArray[1] + this.radius
+        let ymin = coordArray[1] - this.radius
         
         this.AABB = {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
         return {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
@@ -32,10 +35,12 @@ export class Circle extends Shape {
     }
 
     draw(collision: boolean) {
+        let coordArray = this.coords.values
+
         ctx.lineWidth = 2
 
         ctx.beginPath();
-        ctx.arc(this.coords[0], this.coords[1], this.radius, 0, 2 * Math.PI);
+        ctx.arc(coordArray[0], coordArray[1], this.radius, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.fillStyle = "blue"
         if (collision) {
@@ -43,7 +48,7 @@ export class Circle extends Shape {
         }
         ctx.fill()
         ctx.fillStyle = "black"
-        ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
+        ctx.fillRect(coordArray[0], coordArray[1], 1, 1)
         
     }
     drawBoundingBox() {

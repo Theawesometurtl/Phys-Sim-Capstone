@@ -10,7 +10,8 @@ export class Polygon extends Shape {
     constructor(relVertices: Matrix) {
         super()
         this.relVertices = relVertices
-        this.centroidCalc()
+        let adjustment = this.centroidCalc()
+
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.absoluteVerticies = relVertices
         this.AABB = this.getAABB()
@@ -43,23 +44,26 @@ export class Polygon extends Shape {
     }
 
     getAABB() {
-        let xmax = this.coords[0]
-        let xmin = this.coords[0]
-        let ymax = this.coords[1]
-        let ymin = this.coords[1]
+
+        let coordArray = this.coords.values
+
+        let xmax = coordArray[0]
+        let xmin = coordArray[0]
+        let ymax = coordArray[1]
+        let ymin = coordArray[1]
         let values = this.absoluteVerticies.values
         for (let i =0;i<this.relVertices.columns; i++) {
-            if (values[i][0] + this.coords[0]> xmax) {
-                xmax = values[i][0] + this.coords[0]
+            if (values[0][i] + coordArray[0]> xmax) {
+                xmax = values[0][i] + coordArray[0]
             }
-            if (values[i][0] + this.coords[0] < xmin) {
-                xmin = values[i][0] + this.coords[0]
+            if (values[0][i] + coordArray[0] < xmin) {
+                xmin = values[0][i] + coordArray[0]
             }
-            if (values[i][1] + this.coords[1] > ymax) {
-                ymax = values[i][1] + this.coords[1]
+            if (values[1][i] + coordArray[1] > ymax) {
+                ymax = values[1][i] + coordArray[1]
             }
-            if (values[i][1] + this.coords[1] < ymin) {
-                ymin = values[i][1] + this.coords[1]
+            if (values[1][i] + coordArray[1] < ymin) {
+                ymin = values[1][i] + coordArray[1]
             }
         }
         this.AABB = {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
@@ -73,26 +77,26 @@ export class Polygon extends Shape {
         let y: number = 0
         let relValues = this.relVertices.values
         for (let i =0;i<this.relVertices.columns; i++) {
-            x+=relValues[i][0]
-            y+=relValues[i][1]
+            x+=relValues[0][i]
+            y+=relValues[1][i]
         }
         x = x/this.relVertices.columns
         y = y/this.relVertices.columns
         for (let i =0;i<this.relVertices.columns; i++) {
-            relValues[i][0] -= x
-            relValues[i][1] -= y
+            relValues[0][i] -= x
+            relValues[1][i] -= y
         }
         return [x,y]
         
     }
     draw(collision: boolean) {
+        let coordArray = this.coords.values
 
-        
         ctx.lineWidth = 2
-        ctx.moveTo(this.absoluteVerticies.values[0][0] + this.coords[0],this.absoluteVerticies.values[0][1] + this.coords[1])
+        ctx.moveTo(this.absoluteVerticies.values[0][0] + coordArray[0],this.absoluteVerticies.values[1][0] + coordArray[1])
         ctx.beginPath()
         for (let i = 0;i< this.absoluteVerticies.columns;i++) {
-            ctx.lineTo(this.absoluteVerticies.values[i][0] + this.coords[0],this.absoluteVerticies.values[i][1] + this.coords[1])
+            ctx.lineTo(this.absoluteVerticies.values[0][i] + coordArray[0],this.absoluteVerticies.values[1][i] + coordArray[1])
         }
         ctx.closePath()
         ctx.fillStyle = "blue"
@@ -101,19 +105,19 @@ export class Polygon extends Shape {
         }
         ctx.fill()
         ctx.fillStyle = "black"
-        ctx.fillRect(this.coords[0], this.coords[1], 1, 1)
-        ctx.fillRect(this.absoluteVerticies.values[0][0] + this.coords[0]-5, this.absoluteVerticies.values[0][1] + this.coords[1]-5, 10, 10)
+        ctx.fillRect(coordArray[0], coordArray[1], 1, 1)
+        ctx.fillRect(this.absoluteVerticies.values[0][0] + coordArray[0]-5, this.absoluteVerticies.values[1][0] + coordArray[1]-5, 10, 10)
         ctx.fillStyle = "red"
-        ctx.fillRect(this.absoluteVerticies.values[1][0]  + this.coords[0]-5, this.absoluteVerticies.values[1][1] + this.coords[1]-5, 10, 10)
+        ctx.fillRect(this.absoluteVerticies.values[0][1]  + coordArray[0]-5, this.absoluteVerticies.values[1][1] + coordArray[1]-5, 10, 10)
         ctx.strokeStyle = "red"
         ctx.beginPath()
-        let point1 = this.absoluteVerticies.values[3%this.absoluteVerticies.columns]
-        let point2 = this.absoluteVerticies.values[4%this.absoluteVerticies.columns]
+        let point1 = [this.absoluteVerticies.values[0][3%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][3%this.absoluteVerticies.columns]]
+        let point2 = [this.absoluteVerticies.values[0][4%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][4%this.absoluteVerticies.columns]]
         let normal = this.getNormalVector(point1, point2).values
         let lineCenterx = (point1[0] + point2[0])/2
         let lineCentery = (point1[1] + point2[1])/2
-        ctx.moveTo(normal[0]*50 + this.coords[0] +lineCenterx, normal[1]*50 + this.coords[1] +lineCentery)
-        ctx.lineTo(this.coords[0] +lineCenterx, this.coords[1] +lineCentery)
+        ctx.moveTo(normal[0]*50 + coordArray[0] +lineCenterx, normal[1]*50 + coordArray[1] +lineCentery)
+        ctx.lineTo(coordArray[0] +lineCenterx, coordArray[1] +lineCentery)
         ctx.stroke()
         
     }
