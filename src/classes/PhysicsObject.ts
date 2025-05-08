@@ -62,10 +62,14 @@ export class  PhysicsObject {
         if (this.gravityTrue)
             {this.velocity.values[1] -= gravity *2}
         
-        
-        
-        this.shape.update()
         this.computer.force = new Vector([0,-gravity*this.mass*1000])
+        this.shape.update()
+        if (this.shape.AABB.ymax > canvas.height) {
+            this.computer.momentum = this.computer.momentum.negate()
+            
+            // this.coords.values[1] -=1
+        }
+        this.computer.coords = this.coords
         let y0 = this.computer.stateVectorsToArray()
         let y1 = this.computer.ode(y0, 4,0,1)
         this.computer.arrayToStateVectors(y1)

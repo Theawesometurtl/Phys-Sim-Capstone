@@ -9,7 +9,7 @@ import { Matrix, Vector } from 'ts-matrix';
 import { PointMass } from '../classes/pointMass';
 
 canvas.width = window.innerWidth/2 - 100
-canvas.height = window.innerHeight/2 - 10
+canvas.height = window.innerHeight - 30
 let canvas2: HTMLCanvasElement = document.getElementById("canvas2") as HTMLCanvasElement
 let ctx2: CanvasRenderingContext2D = canvas2.getContext("2d") as CanvasRenderingContext2D;
 
@@ -23,14 +23,20 @@ let circle = new PhysicsObject(circleShape, circlePM, true, true, true)
 // let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
 
 let graph = new Graph(canvas2, ctx2)
-// graph.draw(circleRB.dydt())
-
+graph.drawDifferentialPhysics(circlePM.dydt.bind(new PointMass(new Vector([100, 100]))))
+let point
 let interval = setInterval(() => main(), 1000/fps)
 interval
+let timer = 0
+let canvasHeightDifference = -canvas.height +canvas2.height
 function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   circle.update(1)
   circle.draw()
+  point = graph.coordinateToPosition([circlePM.velocity.values[1]/10,0])
+  graph.continueCurve([point[0], circlePM.coords.values[1] + canvasHeightDifference + 50])
+  console.log(point)
+  timer = 0
   // canvasStaticBottom.draw()
   // canvasStaticBottom.update(1)
   // let rungeKutta4thOrderStateVectorPredictor: StateVectorPredictor = (y0: number[], len: number, t0: number, t1: number) => rungeKutta4thOrder(y0, len, t0, t1, dStateVector);
