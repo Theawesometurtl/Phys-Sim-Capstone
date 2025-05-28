@@ -47,32 +47,31 @@ export class  PhysicsObject {
     update(frames: number) {
         this.collision = false
         if (this.playerControlled) {
+            let playerForce = 10
             if (pressedKeys[87]) {
-                this.coords.values[1] -= 4
+                this.computer.force = this.computer.force.add(new Vector([0, -playerForce]))
             }
             if (pressedKeys[83]) {
-                this.coords.values[1] += 4
+                this.computer.force = this.computer.force.add(new Vector([0, playerForce]))
             }
             if (pressedKeys[65]) {
-                this.coords.values[0] -= 4
+                this.computer.force = this.computer.force.add(new Vector([-playerForce, 0]))
             }
             if (pressedKeys[68]) {
-                this.coords.values[0] += 4
+                this.computer.force = this.computer.force.add(new Vector([playerForce, 0]))
             }}
-        if (this.gravityTrue)
-            {this.velocity.values[1] -= gravity *2}
+        if (this.gravityTrue) {
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1000]) )  
+            }
         
-        this.computer.force = new Vector([0,-gravity*this.mass*1000])
         this.shape.update()
         if (this.shape.AABB.ymax > canvas.height) {
-            this.computer.momentum = this.computer.momentum.negate()
-            
-            // this.coords.values[1] -=1
+            this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
         }
-        this.computer.coords = this.coords
         let y0 = this.computer.stateVectorsToArray()
         let y1 = this.computer.ode(y0, 4,0,1)
         this.computer.arrayToStateVectors(y1)
+        this.computer.reset()
         this.coords = this.computer.coords
             
     }

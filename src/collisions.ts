@@ -25,9 +25,9 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
     //check whether a vertex is within the circle
     for (let i=0;i< polygon.absoluteVerticies.columns;i++){
         if (circle.isPointWithinCircle(polygon.absoluteVerticies.values[i])) {
-
+            
         }
-
+        
         let normal = polygon.getNormalVector(polygon.absoluteVerticies.values[i], polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns])
         //find slope of a line
         let slope = polygon.absoluteVerticies.values[i][1]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][1]/polygon.absoluteVerticies.values[i][0]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][0]
@@ -36,24 +36,24 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         //if a line from the center of the circle with a slope perpindicular to our line doesn't intersect
         //with the polygon line segment when our circle line with the length of the radius spans out in
         //both directions, then there is no intersection
-
+        
         //rise/run = y/x
         // sqrt(x**2 + y**2) = r
-
+        
         //y*slope = x
         //r^2 -y^2 = x^2
-
+        
         //sqrt(r^2-y^2) = x*slope
-
+        
         //r^2 - x^2 = (x*slope)^2
         //r^2 = x^2(1 + slope^2)
         //x = sqrt((r^2)/1+slope^2)
         //y = x/slope
-
+        
         let x = Math.sqrt(circle.radius**2 /(1+invSlope^2))
         let y = x/invSlope
         //then we find if the lines intersect
-
+        
         let bias1 = polygon.absoluteVerticies.values[i][1] - polygon.absoluteVerticies.values[i][1]* slope
         let bias2 = circle.coords.values[1] - circle.coords.values[0]*invSlope
         // y = mx+b
@@ -63,7 +63,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         let intersectionx = (bias2-bias1)/(slope-invSlope)
         let intersectiony = slope*intersectionx + bias2
         
-
+        
         ctx.strokeStyle = "red"
         ctx.lineWidth = 5
         ctx.beginPath()
@@ -77,25 +77,37 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         // ctx.lineTo(intersectionx, intersectiony)
         // ctx.stroke()
         // console.log(slope, bias1, bias2)
-
+        
         //find contacts using Seperating Axis Theorem
-
+        
         let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords.values[0], polygon.absoluteVerticies.values[i][1] + polygon.coords.values[1]]).dot(normal)
         let projectedCircleCenter = new Vector(circle.coords.values).dot(normal)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
             let hi = projectedLine + circle.radius - projectedCircleCenter
             let hello = normal.scale(hi)
-
+            
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
             let hi = projectedLine - circle.radius - projectedCircleCenter
             let hello = normal.scale(hi)
-
+            
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
+    }
+}
+function circleCircle(circle1:Circle, physicsObject1: PhysicsObject, circle2: Circle, physicsObject2: PhysicsObject) {
+    let centroidDifference = physicsObject1.coords.add(physicsObject2.coords.negate()).length()
+    let combinedRadius = circle1.radius + circle2.radius
+    if (centroidDifference < combinedRadius) {
+        let thing = (combinedRadius - centroidDifference)/2
+        let normalCentroidDifference = physicsObject1.coords.add(physicsObject2.coords.negate())
+
+        //unfinished, need to check whether to rotate vector pi radians
+        physicsObject1.coords.add(normalCentroidDifference.scale(thing))
+        physicsObject2.coords.add(normalCentroidDifference.scale(thing))
     }
 }
 function generalCollision(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject, point: number[]) {

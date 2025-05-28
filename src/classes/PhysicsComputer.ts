@@ -29,4 +29,7 @@ stateVectorLength: number
         console.error("empty parent method run")
         return []
     }
+    reset() {
+        console.error("empty parent method run")
+    }
 }

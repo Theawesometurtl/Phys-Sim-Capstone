@@ -2,7 +2,6 @@ import { Vector } from "ts-matrix"
 import { gravity } from "../globals"
 import { PhysicsComputer } from "./PhysicsComputer"
 import { IncrementingValue } from "./Counter"
-import { rungeKutta4thOrder } from "../odes"
 export class PointMass extends PhysicsComputer {
     velocity: Vector
     force: Vector
@@ -16,43 +15,40 @@ export class PointMass extends PhysicsComputer {
         this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.mass = 1
-        this.force = new Vector([0,-gravity*this.mass*1000])
+        this.force = new Vector([0, 0])
         this.invMass = this.mass**-1
         this.linDrag = .999
-        this.momentum = this.velocity.scale(this.mass)
+        this.momentum = new Vector([0,0])
         this.stateVectorLength = 4
 
     }
 
     stateVectorsToArray(): number[] {
-        // console.log([...this.coords.values, ...this.momentum.values, ...this.force.values])
+        console.log([...this.coords.values, ...this.momentum.values, ...this.force.values])
 
         return [...this.coords.values, ...this.momentum.values]
     }
 
     arrayToStateVectors(array: number[]): void {
-        let i = new IncrementingValue()
-        // console.log(array)
-        this.coords = new Vector([array[i.value],array[i.value]])
-        this.momentum = new Vector([array[i.value],array[i.value]])
+        console.log(array)
+        this.coords = new Vector([array[0],array[1]])
+        this.momentum = new Vector([array[2],array[3]])
 
     }
-    update() {
-        this.force = new Vector([0,-gravity*this.mass])
+    reset() {
+        this.force = new Vector([0, 0])
     }
 
     dydt(t: number = 0, y0: number[]): number[] {
         let dValues: number[] = []
-        let i = new IncrementingValue()
-        let accelValues = (this.force.scale(this.invMass).add(this.momentum.scale(-.2*this.invMass))).values
-
-        this.velocity = this.momentum.scale(this.invMass)
+        let accelValues = (this.force).values
+        console.log(y0)
 
 
-        dValues[i.value] = this.velocity.values[0]
-        dValues[i.value] = this.velocity.values[1]
-        dValues[i.value] = accelValues[0]
-        dValues[i.value] = accelValues[1]
+        dValues[0] = y0[2]*this.invMass
+        dValues[1] = y0[3]*this.invMass
+        dValues[2] = accelValues[0]
+        dValues[3] = accelValues[1]
         return dValues
     }
 
