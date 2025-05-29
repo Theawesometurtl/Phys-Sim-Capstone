@@ -33,9 +33,9 @@ function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   circle.update(1)
   circle.draw()
-  point = graph.coordinateToPosition([circlePM.velocity.values[1]/10,0])
+  point = graph.coordinateToPosition([circlePM.momentum.values[1]*1,0])
   graph.continueCurve([point[0], circlePM.coords.values[1] + canvasHeightDifference + 50])
-  console.log(point)
+  console.log(point, circlePM.momentum)
   timer = 0
   // canvasStaticBottom.draw()
   // canvasStaticBottom.update(1)

@@ -86,8 +86,8 @@ export class Graph {
                 let coord = this.posToCoordinate(pos)
                 let dxdy = dxdyFunc(1, [0, coord[0],0,coord[1] ])
                 //normalize dxdy
-                let rotation = (Math.atan2(1, dxdy[3]/100))
-                console.log(rotation, dxdy, coord)
+                let rotation = (Math.atan2(1, dxdy[3])*.25)
+                // console.log(rotation, dxdy, coord)
                 // console.log([row, column], [this.canvas.width, this.canvas.  height] ,pos, coord, dxdy, rotation)
                 // let dxdyMagnitude = Math.sqrt(dxdy[0]**2+(row*-1)**2)
                 // dxdy = [dxdy[0]*3/dxdyMagnitude, (row*-1)*3/dxdyMagnitude]

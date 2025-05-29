@@ -18,6 +18,7 @@ export class  PhysicsObject {
     gravityTrue: boolean
     momentum: Vector
     computer: PhysicsComputer
+    
 
     constructor(shape: Shape = new Circle(), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
@@ -42,9 +43,10 @@ export class  PhysicsObject {
     get stateVector(){
         return [this.coords, this.momentum]
     }
-
-
+    
+    
     update(frames: number) {
+        this.computer.reset()
         this.collision = false
         if (this.playerControlled) {
             let playerForce = 10
@@ -61,7 +63,7 @@ export class  PhysicsObject {
                 this.computer.force = this.computer.force.add(new Vector([playerForce, 0]))
             }}
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1000]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*10]) )  
             }
         
         this.shape.update()
@@ -71,7 +73,6 @@ export class  PhysicsObject {
         let y0 = this.computer.stateVectorsToArray()
         let y1 = this.computer.ode(y0, 4,0,1)
         this.computer.arrayToStateVectors(y1)
-        this.computer.reset()
         this.coords = this.computer.coords
             
     }

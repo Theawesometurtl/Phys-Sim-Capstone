@@ -24,13 +24,13 @@ export class PointMass extends PhysicsComputer {
     }
 
     stateVectorsToArray(): number[] {
-        console.log([...this.coords.values, ...this.momentum.values, ...this.force.values])
+        // console.log([...this.coords.values, ...this.momentum.values, ...this.force.values])
 
         return [...this.coords.values, ...this.momentum.values]
     }
 
     arrayToStateVectors(array: number[]): void {
-        console.log(array)
+        // console.log(array)
         this.coords = new Vector([array[0],array[1]])
         this.momentum = new Vector([array[2],array[3]])
 
@@ -42,7 +42,6 @@ export class PointMass extends PhysicsComputer {
     dydt(t: number = 0, y0: number[]): number[] {
         let dValues: number[] = []
         let accelValues = (this.force).values
-        console.log(y0)
 
 
         dValues[0] = y0[2]*this.invMass

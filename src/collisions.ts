@@ -6,7 +6,7 @@ import { Vector, Matrix } from 'ts-matrix';
 
 
 
-export function rigidbodyCollisionCheck(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject) {
+export function generalCollisionResolver(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject) {
     if (physicsObject1.shape instanceof Polygon && physicsObject2.shape instanceof Polygon) {
         polygonPolygon(physicsObject1, physicsObject2)
     } 
@@ -15,6 +15,9 @@ export function rigidbodyCollisionCheck(physicsObject1: PhysicsObject, physicsOb
     } 
     if (physicsObject1.shape instanceof Circle && physicsObject2.shape instanceof Polygon) {
         polygonCircle(physicsObject2, physicsObject1, physicsObject2.shape, physicsObject1.shape)
+    } 
+    if (physicsObject1.shape instanceof Circle && physicsObject2.shape instanceof Circle) {
+        circleCircle(physicsObject1, physicsObject2, physicsObject1.shape, physicsObject2.shape)
     } 
     
 }
@@ -98,7 +101,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         }
     }
 }
-function circleCircle(circle1:Circle, physicsObject1: PhysicsObject, circle2: Circle, physicsObject2: PhysicsObject) {
+function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject, circle1:Circle,  circle2: Circle, ) {
     let centroidDifference = physicsObject1.coords.add(physicsObject2.coords.negate()).length()
     let combinedRadius = circle1.radius + circle2.radius
     if (centroidDifference < combinedRadius) {
@@ -108,6 +111,23 @@ function circleCircle(circle1:Circle, physicsObject1: PhysicsObject, circle2: Ci
         //unfinished, need to check whether to rotate vector pi radians
         physicsObject1.coords.add(normalCentroidDifference.scale(thing))
         physicsObject2.coords.add(normalCentroidDifference.scale(thing))
+
+        let initialPointVelocity = physicsObject1.velocity.add(physicsObject2.velocity)
+        let impulse = impulseCalculation(1, initialPointVelocity,normalCentroidDifference,physicsObject1.mass,physicsObject2.mass, normalCentroidDifference, normalCentroidDifference, circle1.momentOfInertia, circle2.momentOfInertia)
+
+        let finalVelocity1 = physicsObject1.velocity.add(normalCentroidDifference.scale(impulse/physicsObject1.mass))
+        let finalVelocity2 = physicsObject2.velocity.add(normalCentroidDifference.scale(impulse/physicsObject2.mass))
+        
+        // let projectedVelocity1 = normalCentroidDifference.dot(physicsObject1.momentum)
+        // let projectedVelocity2 = normalCentroidDifference.dot(physicsObject2.momentum)
+
+        // let a = 2
+        // let b = -(projectedVelocity1 + projectedVelocity2)
+        // let c = (projectedVelocity1*projectedVelocity2)
+
+        // let newProjectedVelocity2 = (-b +/*idk if this is plus or minus*/
+        //     Math.sqrt(b**2 -4*a*c)
+        // )/(2*a)
     }
 }
 function generalCollision(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject, point: number[]) {
@@ -119,6 +139,15 @@ function generalCollision(physicsObject1: PhysicsObject, physicsObject2: Physics
     // physicsObject1?.
 
 
+}
+// took this formula from https://www.myphysicslab.com/engine2D/collision-en.html
+function impulseCalculation(elasticity: number, initialPointVelocity: Vector, normal: Vector, massA: number,
+    massB: number, contactDistanceA: Vector, contactDistanceB: Vector, inertiaA: number, inertiaB: number
+) {
+    let contactDistanceACrossNormal = contactDistanceA.cross(normal)
+    let contactDistanceBCrossNormal = contactDistanceB.cross(normal)
+    let impulse = initialPointVelocity.scale(-(1 + elasticity)).dot(normal)/(1/massA + 1/massB + contactDistanceACrossNormal.dot(contactDistanceACrossNormal)/inertiaA + contactDistanceBCrossNormal.dot(contactDistanceBCrossNormal)/inertiaB)
+    return impulse
 }
 
 //took this from https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
