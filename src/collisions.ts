@@ -105,19 +105,21 @@ function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObje
     let centroidDifference = physicsObject1.coords.add(physicsObject2.coords.negate()).length()
     let combinedRadius = circle1.radius + circle2.radius
     if (centroidDifference < combinedRadius) {
-        let thing = (combinedRadius - centroidDifference)/2
-        let normalCentroidDifference = physicsObject1.coords.add(physicsObject2.coords.negate())
-
+        let thing = (combinedRadius - centroidDifference)
+        let normalCentroidDifference = physicsObject2.coords.add(physicsObject1.coords.negate()).normalize()
         //unfinished, need to check whether to rotate vector pi radians
-        physicsObject1.coords.add(normalCentroidDifference.scale(thing))
-        physicsObject2.coords.add(normalCentroidDifference.scale(thing))
+        
+        physicsObject1.computer.coords = physicsObject1.coords.add(normalCentroidDifference.scale(-thing))
+        physicsObject2.computer.coords = physicsObject2.coords.add(normalCentroidDifference.scale(thing))
 
-        let initialPointVelocity = physicsObject1.velocity.add(physicsObject2.velocity)
+        let initialPointVelocity = (physicsObject1.computer.momentum.scale(1/physicsObject1.mass)).add(physicsObject2.computer.momentum.scale(-1/physicsObject2.mass))
         let impulse = impulseCalculation(1, initialPointVelocity,normalCentroidDifference,physicsObject1.mass,physicsObject2.mass, normalCentroidDifference, normalCentroidDifference, circle1.momentOfInertia, circle2.momentOfInertia)
 
-        let finalVelocity1 = physicsObject1.velocity.add(normalCentroidDifference.scale(impulse/physicsObject1.mass))
-        let finalVelocity2 = physicsObject2.velocity.add(normalCentroidDifference.scale(impulse/physicsObject2.mass))
+        physicsObject1.computer.momentum = physicsObject1.computer.momentum.add(normalCentroidDifference.scale(impulse))
+        physicsObject2.computer.momentum = physicsObject2.computer.momentum.add(normalCentroidDifference.scale(-impulse))
         
+        
+
         // let projectedVelocity1 = normalCentroidDifference.dot(physicsObject1.momentum)
         // let projectedVelocity2 = normalCentroidDifference.dot(physicsObject2.momentum)
 
@@ -144,9 +146,13 @@ function generalCollision(physicsObject1: PhysicsObject, physicsObject2: Physics
 function impulseCalculation(elasticity: number, initialPointVelocity: Vector, normal: Vector, massA: number,
     massB: number, contactDistanceA: Vector, contactDistanceB: Vector, inertiaA: number, inertiaB: number
 ) {
+    contactDistanceA = new Vector([...contactDistanceA.values,0])
+    contactDistanceB = new Vector([...contactDistanceB.values,0])
+    normal = new Vector([...normal.values,0])
     let contactDistanceACrossNormal = contactDistanceA.cross(normal)
     let contactDistanceBCrossNormal = contactDistanceB.cross(normal)
     let impulse = initialPointVelocity.scale(-(1 + elasticity)).dot(normal)/(1/massA + 1/massB + contactDistanceACrossNormal.dot(contactDistanceACrossNormal)/inertiaA + contactDistanceBCrossNormal.dot(contactDistanceBCrossNormal)/inertiaB)
+    // console.log(initialPointVelocity.scale(-(1 + elasticity)).dot(normal), )
     return impulse
 }
 

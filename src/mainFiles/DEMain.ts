@@ -13,7 +13,7 @@ canvas.height = window.innerHeight - 30
 let canvas2: HTMLCanvasElement = document.getElementById("canvas2") as HTMLCanvasElement
 let ctx2: CanvasRenderingContext2D = canvas2.getContext("2d") as CanvasRenderingContext2D;
 
-let circleShape = new Circle()
+let circleShape = new Circle(50)
 let circlePM: PointMass = new PointMass(new Vector([100, 100]))
 let circle = new PhysicsObject(circleShape, circlePM, true, true, true)
 // let canvasStaticBottomShape = new Polygon(new Matrix(2, 4, [[0, canvas.width, canvas.width, 0], [canvas.height, canvas.height, canvas.height+10000, canvas.height+10000]]))

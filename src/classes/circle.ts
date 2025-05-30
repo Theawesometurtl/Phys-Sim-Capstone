@@ -4,11 +4,11 @@ export class Circle extends Shape {
     // coords: number[]
     radius: number
 
-    constructor() {
+    constructor(radius: number) {
         super()
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.AABB = this.getAABB()
-        this.radius = 50
+        this.radius = radius
     }
     isPointWithinCircle(point: number[]): boolean {
         let coordArray = this.coords.values

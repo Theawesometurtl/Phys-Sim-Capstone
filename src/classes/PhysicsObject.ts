@@ -20,7 +20,7 @@ export class  PhysicsObject {
     computer: PhysicsComputer
     
 
-    constructor(shape: Shape = new Circle(), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
         this.computer = computer
         this.coords = computer.coords
@@ -63,12 +63,28 @@ export class  PhysicsObject {
                 this.computer.force = this.computer.force.add(new Vector([playerForce, 0]))
             }}
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*10]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1]) )  
             }
         
         this.shape.update()
         if (this.shape.AABB.ymax > canvas.height) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
+            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height
+        }
+        if (this.shape.AABB.ymin < 0) {
+            this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
+            this.computer.coords.values[1] -= this.shape.AABB.ymin - 0
+
+        }
+        if (this.shape.AABB.xmax > canvas.width) {
+            this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
+            this.computer.coords.values[1] -= this.shape.AABB.xmax - canvas.width
+
+        }
+        if (this.shape.AABB.xmin < 0) {
+            this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
+            this.computer.coords.values[1] -= this.shape.AABB.xmin - 0
+
         }
         let y0 = this.computer.stateVectorsToArray()
         let y1 = this.computer.ode(y0, 4,0,1)
@@ -80,7 +96,7 @@ export class  PhysicsObject {
     draw() {
         this.shape.coords = this.coords
         this.shape.draw(this.collision)
-        this.shape.drawBoundingBox()
+        // this.shape.drawBoundingBox()
     }
     
 }
