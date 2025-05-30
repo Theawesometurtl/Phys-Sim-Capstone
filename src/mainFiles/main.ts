@@ -4,18 +4,18 @@ import { Rigidbody } from '../classes/rigidbody';
 import { Polygon } from '../classes/polygon';
 import { Circle } from '../classes/circle';
 import { PhysicsObject } from '../classes/PhysicsObject';
-import { Matrix } from 'ts-matrix';
+import { Matrix, Vector } from 'ts-matrix';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
 let square = new Polygon(new Matrix(2, 4, [[0, 0, 50, 50], [0, 50, 50, 0]]))
-let polygonRB: Rigidbody = new Rigidbody([200, 100])
+let polygonRB: Rigidbody = new Rigidbody(new Vector([200, 100,0]))
 let polygon: PhysicsObject = new PhysicsObject(square, polygonRB, false, true, false)
 let weirdShape = new Polygon(new Matrix(2, 5, [[0, 0,50,50,100],[0,50,50,0,-100]]))
-let weirdRB: Rigidbody = new Rigidbody([400, 400])
+let weirdRB: Rigidbody = new Rigidbody(new Vector([400, 400, 0]))
 let weird: PhysicsObject = new PhysicsObject(weirdShape,weirdRB, true, true, false)
-let circleShape = new Circle()
-let circleRB: Rigidbody = new Rigidbody([100, 100])
+let circleShape = new Circle(50)
+let circleRB: Rigidbody = new Rigidbody(new Vector([100, 100, 0]))
 let circle: PhysicsObject = new PhysicsObject(circleShape, circleRB, false, true, false)
 // let canvasStaticBottom: Rigidbody = new Rigidbody([[0, canvas.height], [canvas.width, canvas.height], [canvas.width, canvas.height+100], [0, canvas.height+100]],[0,0],false,false)
 // let canvasStaticLeft: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[0,0],false,false)

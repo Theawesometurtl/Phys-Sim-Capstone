@@ -10,10 +10,10 @@ canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
 
 let circleShape1 = new Circle(50)
-let sumoBot1PM: PointMass = new PointMass(new Vector([100, 100]))
+let sumoBot1PM: PointMass = new PointMass(new Vector([100, 100, 0]))
 let sumoBot1 = new PhysicsObject(circleShape1, sumoBot1PM, true, true, false)
 let circleShape2 = new Circle(50)
-let sumoBot2PM: PointMass = new PointMass(new Vector([100, 300]))
+let sumoBot2PM: PointMass = new PointMass(new Vector([100, 300, 0]))
 let sumoBot2 = new PhysicsObject(circleShape2, sumoBot2PM, false, true, false)
 
 let physicsObjectArray: PhysicsObject[] = [sumoBot1, sumoBot2]

@@ -6,27 +6,23 @@ import { Shape } from "./Shape"
 import { PhysicsComputer } from "./PhysicsComputer"
 export class  PhysicsObject {
     static PhysicsObjectAmount = 0
-    velocity: Vector
     mass: number
     linDrag: number
     playerControlled: boolean
     physicsObjectNumber: number
     collision: boolean
     shape: Shape
-    coords: Vector
     dynamic: boolean
     gravityTrue: boolean
-    momentum: Vector
     computer: PhysicsComputer
+    coords: Vector
     
 
     constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
         this.computer = computer
-        this.coords = computer.coords
         this.shape = shape
         this.dynamic = dynamic
-        this.velocity = new Vector([0,0])
         // this.rvelocity =  -1* Math.PI/100
         this.mass = 1
         this.linDrag = .999
@@ -35,13 +31,10 @@ export class  PhysicsObject {
         this.gravityTrue = gravityTrue
         PhysicsObject.PhysicsObjectAmount ++;
         this.collision = false
-        this.momentum = this.velocity.scale(this.mass)
         let adjustment = shape.centroidCalc()
+        this.coords = computer.coords
         this.coords.values[0] += adjustment[0]
         this.coords.values[1] += adjustment[1]
-    }
-    get stateVector(){
-        return [this.coords, this.momentum]
     }
     
     
@@ -51,19 +44,19 @@ export class  PhysicsObject {
         if (this.playerControlled) {
             let playerForce = 10
             if (pressedKeys[87]) {
-                this.computer.force = this.computer.force.add(new Vector([0, -playerForce]))
+                this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
             }
             if (pressedKeys[83]) {
-                this.computer.force = this.computer.force.add(new Vector([0, playerForce]))
+                this.computer.force = this.computer.force.add(new Vector([0, playerForce, 0]))
             }
             if (pressedKeys[65]) {
-                this.computer.force = this.computer.force.add(new Vector([-playerForce, 0]))
+                this.computer.force = this.computer.force.add(new Vector([-playerForce, 0, 0]))
             }
             if (pressedKeys[68]) {
-                this.computer.force = this.computer.force.add(new Vector([playerForce, 0]))
+                this.computer.force = this.computer.force.add(new Vector([playerForce, 0, 0]))
             }}
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1, 0]) )  
             }
         
         this.shape.update()
@@ -78,19 +71,19 @@ export class  PhysicsObject {
         }
         if (this.shape.AABB.xmax > canvas.width) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.xmax - canvas.width
+            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width
 
         }
         if (this.shape.AABB.xmin < 0) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.xmin - 0
+            this.computer.coords.values[0] -= this.shape.AABB.xmin - 0
 
         }
         let y0 = this.computer.stateVectorsToArray()
         let y1 = this.computer.ode(y0, 4,0,1)
+        
         this.computer.arrayToStateVectors(y1)
         this.coords = this.computer.coords
-            
     }
 
     draw() {

@@ -11,18 +11,18 @@ canvas.height = window.innerHeight - 10
 
 
 // let circleShape = new Circle(100)
-// let particlePM: PointMass = new PointMass(new Vector([canvas.width/2, canvas.height/2]))
+// let particlePM: PointMass = new PointMass(new Vector([canvas.width/2, canvas.height/2, 0]))
 // let particle = new PhysicsObject(circleShape, particlePM, false, true, false)
 
 
 let circleArray: PhysicsObject[] = []
 let physicsObjectArray: PhysicsObject[] = []
-let columns = 20
-let rows = 20
+let columns = 10
+let rows = 10
 for (let i = 0; i < rows; i++) {
   for (let j = 0; j < columns; j++) {
     let circleShape = new Circle(10)
-    let particlePM: PointMass = new PointMass(new Vector([21 + i * 21, 21 + j* 21]))
+    let particlePM: PointMass = new PointMass(new Vector([21 + i * 21, 21 + j* 21, 0]))
     let particle = new PhysicsObject(circleShape, particlePM, true, false, true)
     circleArray[i*columns + j] = particle
     physicsObjectArray[i*columns + j] = particle
@@ -43,12 +43,12 @@ for (let i = 0; i < rows; i++) {
   }
 }
 // physicsObjectArray.push(particle)
-physicsObjectArray.map((value: PhysicsObject, index: number) => 
-{
-  let i = Math.round(value.computer.coords.values[0]*rows/canvas.height)
-  let j = Math.round(value.computer.coords.values[0]*rows/canvas.height)
-  splitPhysicsObjectArray[i][j].push(value)
-})
+// physicsObjectArray.map((value: PhysicsObject, index: number) => 
+// {
+//   let i = Math.round(value.computer.coords.values[0]*rows/canvas.height)
+//   let j = Math.round(value.computer.coords.values[0]*rows/canvas.height)
+//   splitPhysicsObjectArray[i][j].push(value)
+// })
 
 let interval = setInterval(() => main(), 1000/fps)
 interval
@@ -75,9 +75,12 @@ function main() {
   //     generalCollisionResolver(value, splitPhysicsObjectArray[i][j][k])
       
   // }})}}
+
+    
   physicsObjectArray.map((value: PhysicsObject, index: number) => {for (let i = index+1; i < physicsObjectArray.length; i++) {
     generalCollisionResolver(value, physicsObjectArray[i])
   }})
+
   
 
 
