@@ -12,6 +12,7 @@ export class Rigidbody extends PhysicsComputer {
     angularMomentum: Vector
     invMass: number
     torque: Vector
+    force: Vector
 
 
     constructor(coords: Vector) {
@@ -25,8 +26,11 @@ export class Rigidbody extends PhysicsComputer {
         this.invMass = this.mass**-1
         this.linDrag = .999
         this.momentum = new Vector([0,0, 0])
-        this.angularMomentum = new Vector([0,0,0])
+        this.angularMomentum = new Vector([0,0,1])
         this.torque = new Vector([0,0,0])
+        this.force = new Vector([0,0, 0])
+        this.stateVectorLength = 18
+
     }
     stateVectorsToArray(): number[]{
         return [...this.coords.values, ...this.momentum.values, ...this.angularMomentum.values, ...this.rotation.values[0],...this.rotation.values[1],...this.rotation.values[2] ]
@@ -41,8 +45,8 @@ export class Rigidbody extends PhysicsComputer {
         
     }
     reset(): void {
-        this.torque = new Vector([0,0,0])
-        this.momentum = new Vector([0,0, 0])
+        this.torque = new Vector([0,0,1])
+        this.force = new Vector([0,0, 0])
         
     }
     dydt(t: number = 0, y0: number[]): number[] {
@@ -69,13 +73,11 @@ export class Rigidbody extends PhysicsComputer {
         let rotationMatrix = new Matrix(3,3, [[y0[j.value],y0[j.value],y0[j.value]],
                                                 [y0[j.value],y0[j.value],y0[j.value]],
                                                 [y0[j.value],y0[j.value],y0[j.value]]])
-        
         let ddtRotationMatrix = angularMomentumSkewSymetricMatrix.multiply(rotationMatrix)
         for (let k = 0; k < ddtRotationMatrix.values.length; k++) {
             ddtRotationMatrix.values[k].map((value: number) => dValues[i.value] = value)
         }
         
-
 
         return dValues
     }

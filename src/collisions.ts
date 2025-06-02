@@ -3,37 +3,46 @@ import { ctx } from "./globals";
 import { PhysicsObject } from "./classes/PhysicsObject";
 import { Polygon } from "./classes/polygon";
 import { Vector, Matrix } from 'ts-matrix';
+import { PhysicsComputer } from "./classes/PhysicsComputer";
+import { Rigidbody } from "./classes/rigidbody";
 
 
 
 export function generalCollisionResolver(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject) {
+
+    physicsObject1.shape.update()
+    physicsObject2.shape.update()
+    if (((physicsObject1.shape.AABB.xmin < physicsObject2.shape.AABB.xmin && physicsObject1.shape.AABB.xmax > physicsObject2.shape.AABB.xmin) ||(physicsObject1.shape.AABB.xmin <physicsObject2.shape.AABB.xmax && physicsObject1.shape.AABB.xmax >physicsObject2.shape.AABB.xmax)) &&((physicsObject1.shape.AABB.ymin <physicsObject2.shape.AABB.ymin && physicsObject1.shape.AABB.ymax >physicsObject2.shape.AABB.ymin) ||(physicsObject1.shape.AABB.ymin <physicsObject2.shape.AABB.ymax && physicsObject1.shape.AABB.ymax >physicsObject2.shape.AABB.ymax))){
+
     if (physicsObject1.shape instanceof Polygon && physicsObject2.shape instanceof Polygon) {
         polygonPolygon(physicsObject1, physicsObject2)
     } 
     if (physicsObject1.shape instanceof Polygon && physicsObject2.shape instanceof Circle) {
-        polygonCircle(physicsObject1, physicsObject2, physicsObject1.shape, physicsObject2.shape)
+        if (physicsObject1.computer instanceof Rigidbody) {
+            polygonCircle(physicsObject1, physicsObject1.computer, physicsObject2, physicsObject1.shape, physicsObject2.shape)
+        }
     } 
     if (physicsObject1.shape instanceof Circle && physicsObject2.shape instanceof Polygon) {
-        polygonCircle(physicsObject2, physicsObject1, physicsObject2.shape, physicsObject1.shape)
+        if (physicsObject2.computer instanceof Rigidbody) {
+        polygonCircle(physicsObject2, physicsObject2.computer, physicsObject1, physicsObject2.shape, physicsObject1.shape)
+        }
     } 
     if (physicsObject1.shape instanceof Circle && physicsObject2.shape instanceof Circle) {
         circleCircle(physicsObject1, physicsObject2, physicsObject1.shape, physicsObject2.shape)
-    } 
+    } }
     
 }
 function polygonPolygon(polygon1:PhysicsObject, polygon2: PhysicsObject) {
     
 }
-function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject: PhysicsObject, polygon: Polygon, circle: Circle) {
+function polygonCircle(polygonPhysicsObject: PhysicsObject, rigidbodyComputer: Rigidbody, circlePhysicsObject: PhysicsObject, polygon: Polygon, circle: Circle) {
     //check whether a vertex is within the circle
     for (let i=0;i< polygon.absoluteVerticies.columns;i++){
-        if (circle.isPointWithinCircle(polygon.absoluteVerticies.values[i])) {
-            
-        }
         
-        let normal = polygon.getNormalVector(polygon.absoluteVerticies.values[i], polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns])
+        
+        let normal = polygon.getNormalVector([polygon.absoluteVerticies.values[0][i], polygon.absoluteVerticies.values[1][i]], [polygon.absoluteVerticies.values[0][(i+1)%polygon.absoluteVerticies.columns], polygon.absoluteVerticies.values[1][(i+1)%polygon.absoluteVerticies.columns]])
         //find slope of a line
-        let slope = polygon.absoluteVerticies.values[i][1]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][1]/polygon.absoluteVerticies.values[i][0]-polygon.absoluteVerticies.values[(i+1)%polygon.absoluteVerticies.columns][0]
+        let slope = polygon.absoluteVerticies.values[1][i]-polygon.absoluteVerticies.values[1][(i+1)%polygon.absoluteVerticies.columns]/polygon.absoluteVerticies.values[0][i]-polygon.absoluteVerticies.values[0][(i+1)%polygon.absoluteVerticies.columns]
         //find the perpindicular slope
         let invSlope = -(1/slope)
         //if a line from the center of the circle with a slope perpindicular to our line doesn't intersect
@@ -57,7 +66,7 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         let y = x/invSlope
         //then we find if the lines intersect
         
-        let bias1 = polygon.absoluteVerticies.values[i][1] - polygon.absoluteVerticies.values[i][1]* slope
+        let bias1 = polygon.absoluteVerticies.values[1][i] - polygon.absoluteVerticies.values[1][i]* slope
         let bias2 = circle.coords.values[1] - circle.coords.values[0]*invSlope
         // y = mx+b
         // m1x + b1 = m2x+b2
@@ -83,18 +92,32 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, circlePhysicsObject:
         
         //find contacts using Seperating Axis Theorem
         
-        let projectedLine = new Vector([polygon.absoluteVerticies.values[i][0] + polygon.coords.values[0], polygon.absoluteVerticies.values[i][1] + polygon.coords.values[1]]).dot(normal)
+        let projectedLine = new Vector([polygon.absoluteVerticies.values[0][i] + polygon.coords.values[0], polygon.absoluteVerticies.values[1][i] + polygon.coords.values[1]]).dot(normal)
         let projectedCircleCenter = new Vector(circle.coords.values).dot(normal)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
-            let hi = projectedLine + circle.radius - projectedCircleCenter
-            let hello = normal.scale(hi)
-            
+            console.log("hi")
+            let intersectionProjection = projectedLine + circle.radius - projectedCircleCenter
+            let intersection = normal.scale(intersectionProjection)
+            let contactDistanceA = intersection.add(circlePhysicsObject.computer.coords.negate())
+            let contactDistanceB = intersection.add(rigidbodyComputer.coords.negate())
+            let initialPointVelocity = circlePhysicsObject.computer.momentum.scale(1/circlePhysicsObject.mass)
+            .add(polygonPhysicsObject.computer.momentum.scale(1/polygonPhysicsObject.mass))
+            .add(rigidbodyComputer.angularMomentum.cross(contactDistanceB))
+            impulseCalculation(1, initialPointVelocity, normal, circlePhysicsObject.mass, polygonPhysicsObject.mass, contactDistanceA, contactDistanceB, circlePhysicsObject.shape.momentOfInertia, circlePhysicsObject.shape.momentOfInertia)
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
-            let hi = projectedLine - circle.radius - projectedCircleCenter
-            let hello = normal.scale(hi)
+            console.log("hi")
+
+            let intersectionProjection = projectedLine - circle.radius - projectedCircleCenter
+            let intersection = normal.scale(intersectionProjection)
+            let contactDistanceA = intersection.add(circlePhysicsObject.computer.coords.negate())
+            let contactDistanceB = intersection.add(rigidbodyComputer.coords.negate())
+            let initialPointVelocity = circlePhysicsObject.computer.momentum.scale(1/circlePhysicsObject.mass)
+            .add(polygonPhysicsObject.computer.momentum.scale(1/polygonPhysicsObject.mass))
+            .add(rigidbodyComputer.angularMomentum.cross(contactDistanceB))
+            impulseCalculation(1, initialPointVelocity, normal, circlePhysicsObject.mass, polygonPhysicsObject.mass, contactDistanceA, contactDistanceB, circlePhysicsObject.shape.momentOfInertia, circlePhysicsObject.shape.momentOfInertia)
             
             circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
@@ -106,6 +129,8 @@ function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObje
     let combinedRadius = circle1.radius + circle2.radius
     // console.log(physicsObject1.coords, physicsObject1.computer.momentum, centroidDifference)
     if (centroidDifference < combinedRadius) {
+        circle1.collision = true
+        circle2.collision = true
         // console.log(physicsObject1.computer.momentum)
         let thing = (combinedRadius - centroidDifference)
         let normalCentroidDifference = physicsObject2.coords.add(physicsObject1.coords.negate()).normalize()
@@ -129,7 +154,7 @@ function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObje
         // let b = -(projectedVelocity1 + projectedVelocity2)
         // let c = (projectedVelocity1*projectedVelocity2)
 
-        // let newProjectedVelocity2 = (-b +/*idk if this is plus or minus*/
+        // let newProjectedVelocity2 = (-b +/*idk if physicsObject1 is plus or minus*/
         //     Math.sqrt(b**2 -4*a*c)
         // )/(2*a)
     }
@@ -144,7 +169,7 @@ function generalCollision(physicsObject1: PhysicsObject, physicsObject2: Physics
 
 
 }
-// took this formula from https://www.myphysicslab.com/engine2D/collision-en.html
+// took physicsObject1 formula from https://www.myphysicslab.com/engine2D/collision-en.html
 function impulseCalculation(elasticity: number, initialPointVelocity: Vector, normal: Vector, massA: number,
     massB: number, contactDistanceA: Vector, contactDistanceB: Vector, inertiaA: number, inertiaB: number
 ) {
@@ -155,7 +180,7 @@ function impulseCalculation(elasticity: number, initialPointVelocity: Vector, no
     return impulse
 }
 
-//took this from https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
+//took physicsObject1 from https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
 function intersects(point1: number[],point2: number[],point3: number[],point4:number[]) {
     var det, gamma, lambda;
     let a = point1[0]

@@ -1,5 +1,5 @@
 import { Vector } from "ts-matrix";
-import { OrdinaryDifferentialEquationSolver, rungeKutta4thOrder, StateVectorDerivatives, StateVectorPredictor } from "../odes";
+import { euler, OrdinaryDifferentialEquationSolver, rungeKutta4thOrder, StateVectorDerivatives, StateVectorPredictor } from "../odes";
 
 export class PhysicsComputer {
 coords: Vector
@@ -13,7 +13,7 @@ stateVectorLength: number
         this.momentum = new Vector([0,0, 0])
         this.velocity = new Vector([0,0, 0])
         this.coords = coords
-        this.ode = (y0: number[], len: number, t0: number, t1: number) => rungeKutta4thOrder(y0, len, t0, t1, this.dydt.bind(this));
+        this.ode = (y0: number[], len: number, t0: number, t1: number) => euler(y0, len, t0, t1, this.dydt.bind(this));
         this.stateVectorLength = 0
         
     }

@@ -40,7 +40,7 @@ export class Polygon extends Shape {
         //normalize
         let magnitude = Math.sqrt(y**2 + x**2)
 
-        return new Vector([-y/magnitude, x/magnitude])
+        return new Vector([-y/magnitude, x/magnitude, 0])
     }
 
     getAABB() {

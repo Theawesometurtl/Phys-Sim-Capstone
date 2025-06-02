@@ -15,7 +15,7 @@ let ctx2: CanvasRenderingContext2D = canvas2.getContext("2d") as CanvasRendering
 
 let circleShape = new Circle(50)
 let circlePM: PointMass = new PointMass(new Vector([100, 100]))
-let circle = new PhysicsObject(circleShape, circlePM, true, true, true)
+let circle = new PhysicsObject(circleShape, circlePM, true, true, true, true)
 // let canvasStaticBottomShape = new Polygon(new Matrix(2, 4, [[0, canvas.width, canvas.width, 0], [canvas.height, canvas.height, canvas.height+10000, canvas.height+10000]]))
 // let canvasStaticBottomRB: Rigidbody = new Rigidbody(new Vector([canvas.width/2,canvas.height -10 + 5000]))
 // let canvasStaticBottom = new PhysicsObject(canvasStaticBottomShape, canvasStaticBottomRB, false,false,false)
@@ -35,7 +35,7 @@ function main() {
   circle.draw()
   point = graph.coordinateToPosition([circlePM.momentum.values[1]*1,0])
   graph.continueCurve([point[0], circlePM.coords.values[1] + canvasHeightDifference + 50])
-  console.log(point, circlePM.momentum)
+  // console.log(point, circlePM.momentum)
   timer = 0
   // canvasStaticBottom.draw()
   // canvasStaticBottom.update(1)

@@ -3,12 +3,14 @@ import { Shape } from "./Shape"
 export class Circle extends Shape {
     // coords: number[]
     radius: number
+    collision: boolean
 
     constructor(radius: number) {
         super()
+        this.radius = radius
         this.momentOfInertia = this.momentOfInertiaCalc()
         this.AABB = this.getAABB()
-        this.radius = radius
+        this.collision = false
     }
     isPointWithinCircle(point: number[]): boolean {
         let coordArray = this.coords.values
@@ -16,7 +18,7 @@ export class Circle extends Shape {
         return displacementFromCenter <= this.radius
     }
     update() {
-        this.getAABB()
+        this.AABB = this.getAABB()
     }
 
     getAABB() {
@@ -31,7 +33,7 @@ export class Circle extends Shape {
         return {xmin: xmin, xmax:xmax,ymin:ymin,ymax:ymax}
     }
     momentOfInertiaCalc(): number { 
-        return 5
+        return (Math.PI*(this.radius**4))/4
     }
 
     draw(collision: boolean) {
@@ -49,7 +51,7 @@ export class Circle extends Shape {
         ctx.fill()
         ctx.fillStyle = "black"
         ctx.fillRect(coordArray[0], coordArray[1], 1, 1)
-        
+        collision = false
     }
     drawBoundingBox() {
         ctx.strokeStyle = "red"

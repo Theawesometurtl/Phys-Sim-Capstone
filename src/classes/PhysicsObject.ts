@@ -1,14 +1,17 @@
-import { Vector } from "ts-matrix"
+import { Matrix, Vector } from "ts-matrix"
 import { Circle } from "./circle"
 import { canvas, ctx, elasticity, gravity, pressedKeys } from "../globals"
 
 import { Shape } from "./Shape"
 import { PhysicsComputer } from "./PhysicsComputer"
+import { Rigidbody } from "./rigidbody"
+import { Polygon } from "./polygon"
 export class  PhysicsObject {
     static PhysicsObjectAmount = 0
     mass: number
     linDrag: number
-    playerControlled: boolean
+    playerControlled1: boolean
+    playerControlled2: boolean
     physicsObjectNumber: number
     collision: boolean
     shape: Shape
@@ -16,17 +19,21 @@ export class  PhysicsObject {
     gravityTrue: boolean
     computer: PhysicsComputer
     coords: Vector
+    rotation: Matrix
     
 
-    constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled1: boolean, playerControlled2: boolean, dynamic: boolean, gravityTrue: boolean
      ) {
         this.computer = computer
         this.shape = shape
         this.dynamic = dynamic
+        this.rotation = new Matrix(3,3, [[0,0,0],[0,0,0],[0,0,0]])
+        
         // this.rvelocity =  -1* Math.PI/100
         this.mass = 1
         this.linDrag = .999
-        this.playerControlled = playerControlled
+        this.playerControlled1 = playerControlled1
+        this.playerControlled2 = playerControlled2
         this.physicsObjectNumber = PhysicsObject.PhysicsObjectAmount
         this.gravityTrue = gravityTrue
         PhysicsObject.PhysicsObjectAmount ++;
@@ -41,8 +48,8 @@ export class  PhysicsObject {
     update(frames: number) {
         this.computer.reset()
         this.collision = false
-        if (this.playerControlled) {
-            let playerForce = 10
+        if (this.playerControlled1) {
+            let playerForce = 1
             if (pressedKeys[87]) {
                 this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
             }
@@ -55,14 +62,29 @@ export class  PhysicsObject {
             if (pressedKeys[68]) {
                 this.computer.force = this.computer.force.add(new Vector([playerForce, 0, 0]))
             }}
+        if (this.playerControlled2) {
+            let playerForce = 1
+            if (pressedKeys[38]) {
+                this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
+            }
+            if (pressedKeys[40]) {
+                this.computer.force = this.computer.force.add(new Vector([0, playerForce, 0]))
+            }
+            if (pressedKeys[37]) {
+                this.computer.force = this.computer.force.add(new Vector([-playerForce, 0, 0]))
+            }
+            if (pressedKeys[39]) {
+                this.computer.force = this.computer.force.add(new Vector([playerForce, 0, 0]))
+            }}
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass*1, 0]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass/10, 0]) )  
             }
         
         this.shape.update()
         if (this.shape.AABB.ymax > canvas.height) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
             this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height
+
         }
         if (this.shape.AABB.ymin < 0) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
@@ -80,10 +102,12 @@ export class  PhysicsObject {
 
         }
         let y0 = this.computer.stateVectorsToArray()
-        let y1 = this.computer.ode(y0, 4,0,1)
-        
+        let y1 = this.computer.ode(y0, this.computer.stateVectorLength,0,1)
         this.computer.arrayToStateVectors(y1)
         this.coords = this.computer.coords
+        if ( this.computer instanceof Rigidbody && this.shape instanceof Polygon) {
+            this.shape.rotation = Math.atan2(this.computer.rotation.values[1][0],this.computer.rotation.values[0][0])
+        }
     }
 
     draw() {
