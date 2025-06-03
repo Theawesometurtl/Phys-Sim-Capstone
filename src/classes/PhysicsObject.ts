@@ -49,7 +49,7 @@ export class  PhysicsObject {
         this.computer.reset()
         this.collision = false
         if (this.playerControlled1) {
-            let playerForce = 1
+            let playerForce = 0.5
             if (pressedKeys[87]) {
                 this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
             }
@@ -63,7 +63,7 @@ export class  PhysicsObject {
                 this.computer.force = this.computer.force.add(new Vector([playerForce, 0, 0]))
             }}
         if (this.playerControlled2) {
-            let playerForce = 1
+            let playerForce = .5
             if (pressedKeys[38]) {
                 this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
             }
@@ -81,24 +81,24 @@ export class  PhysicsObject {
             }
         
         this.shape.update()
-        if (this.shape.AABB.ymax > canvas.height) {
+        if (this.shape.AABB.ymax > canvas.height-100) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height
+            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+100
 
         }
-        if (this.shape.AABB.ymin < 0) {
+        if (this.shape.AABB.ymin < 100) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymin - 0
+            this.computer.coords.values[1] -= this.shape.AABB.ymin - 100
 
         }
-        if (this.shape.AABB.xmax > canvas.width) {
+        if (this.shape.AABB.xmax > canvas.width-100) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width
+            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width+100
 
         }
-        if (this.shape.AABB.xmin < 0) {
+        if (this.shape.AABB.xmin < 100) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmin - 0
+            this.computer.coords.values[0] -= this.shape.AABB.xmin - 100
 
         }
         let y0 = this.computer.stateVectorsToArray()

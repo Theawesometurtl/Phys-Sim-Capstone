@@ -1,4 +1,4 @@
-import { Vector } from "ts-matrix"
+import { Matrix, Vector } from "ts-matrix"
 import { canvas, ctx} from "../globals"
 
 export class Shape {
@@ -45,6 +45,30 @@ export class Shape {
     }
     draw(collision: boolean) {
 
+    }
+    rotationAndScalarsToMatrix(rotation: number, xscalar: number = 1, yscalar: number = 1) {
+        let rotMatrix = new Matrix(2, 2, [[Math.cos(rotation), Math.sin(rotation)], [-Math.sin(rotation), Math.cos(rotation)]])
+        let scaleMatrix = new Matrix(2, 2, [[xscalar, 0], [0, yscalar]])
+        return rotMatrix.multiply(scaleMatrix)
+
+    }
+    drawArrow(x: number, y: number, compositionMatrix: Matrix, colour: string | CanvasGradient | CanvasPattern = "red") {
+        let arrow = new Matrix(2, 8,[[0, -5, 5, 1, 1, -1, -1, 5], [15, 10, 10, 10,0, 0, 10, 10]])
+        let finalArrow = compositionMatrix.multiply(arrow).values
+        ctx.strokeStyle = "pink"
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.moveTo(x + finalArrow[0][0], y + finalArrow[1][0])
+        for (let i = 0; i < arrow.values[0].length; i++) {
+            ctx.lineTo(x + finalArrow[0][i], y + finalArrow[1][i])
+            // console.log(x, finalArrow[i], y, finalArrow[i])
+        }
+        ctx.closePath()
+        ctx.fillStyle = "pink"
+        ctx.stroke()
+        ctx.fill()
+        return [x + finalArrow[0][0], y + finalArrow[1][0]]
+    
     }
     centroidCalc() {
         return [0,0]

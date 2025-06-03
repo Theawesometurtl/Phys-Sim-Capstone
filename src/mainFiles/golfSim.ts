@@ -11,9 +11,9 @@ import { PointMass } from '../classes/pointMass';
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
 
-let circleShape = new Circle()
+let circleShape = new Circle(50)
 let circlePM: PointMass = new PointMass(new Vector([100, 100]))
-let circle = new PhysicsObject(circleShape, circlePM, true, true, true)
+let circle = new PhysicsObject(circleShape, circlePM, true, false, true, true)
 // let canvasStaticBottom: Rigidbody = new Rigidbody([[0, canvas.height], [canvas.width, canvas.height], [canvas.width, canvas.height+100], [0, canvas.height+100]],[0,0],false,false)
 // let canvasStaticLeft: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[0,0],false,false)
 // let canvasStaticRight: Rigidbody = new Rigidbody([[0, 0], [0, canvas.height], [-100, canvas.height], [-100, 0]],[canvas.width,0],false,false)
