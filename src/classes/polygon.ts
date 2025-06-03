@@ -89,7 +89,7 @@ export class Polygon extends Shape {
         return [x,y]
         
     }
-    draw(collision: boolean) {
+    draw() {
         let coordArray = this.coords.values
 
         ctx.lineWidth = 2
@@ -100,7 +100,7 @@ export class Polygon extends Shape {
         }
         ctx.closePath()
         ctx.fillStyle = "blue"
-        if (collision) {
+        if (this.collision) {
             ctx.fillStyle = "red"
         }
         ctx.fill()

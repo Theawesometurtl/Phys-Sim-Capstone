@@ -104,7 +104,6 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, rigidbodyComputer: R
             .add(polygonPhysicsObject.computer.momentum.scale(1/polygonPhysicsObject.mass))
             .add(rigidbodyComputer.angularMomentum.cross(contactDistanceB))
             impulseCalculation(1, initialPointVelocity, normal, circlePhysicsObject.mass, polygonPhysicsObject.mass, contactDistanceA, contactDistanceB, circlePhysicsObject.shape.momentOfInertia, circlePhysicsObject.shape.momentOfInertia)
-            circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
@@ -119,7 +118,6 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, rigidbodyComputer: R
             .add(rigidbodyComputer.angularMomentum.cross(contactDistanceB))
             impulseCalculation(1, initialPointVelocity, normal, circlePhysicsObject.mass, polygonPhysicsObject.mass, contactDistanceA, contactDistanceB, circlePhysicsObject.shape.momentOfInertia, circlePhysicsObject.shape.momentOfInertia)
             
-            circlePhysicsObject.collision = true
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
     }
@@ -131,6 +129,7 @@ function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObje
     if (centroidDifference < combinedRadius) {
         circle1.collision = true
         circle2.collision = true
+        return
         // console.log(physicsObject1.computer.momentum)
         let thing = (combinedRadius - centroidDifference)
         let normalCentroidDifference = physicsObject2.coords.add(physicsObject1.coords.negate()).normalize()

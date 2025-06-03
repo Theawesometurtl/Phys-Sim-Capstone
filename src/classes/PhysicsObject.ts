@@ -13,7 +13,6 @@ export class  PhysicsObject {
     playerControlled1: boolean
     playerControlled2: boolean
     physicsObjectNumber: number
-    collision: boolean
     shape: Shape
     dynamic: boolean
     gravityTrue: boolean
@@ -37,7 +36,6 @@ export class  PhysicsObject {
         this.physicsObjectNumber = PhysicsObject.PhysicsObjectAmount
         this.gravityTrue = gravityTrue
         PhysicsObject.PhysicsObjectAmount ++;
-        this.collision = false
         let adjustment = shape.centroidCalc()
         this.coords = computer.coords
         this.coords.values[0] += adjustment[0]
@@ -47,7 +45,6 @@ export class  PhysicsObject {
     
     update(frames: number) {
         this.computer.reset()
-        this.collision = false
         if (this.playerControlled1) {
             let playerForce = 0.5
             if (pressedKeys[87]) {
@@ -81,24 +78,25 @@ export class  PhysicsObject {
             }
         
         this.shape.update()
-        if (this.shape.AABB.ymax > canvas.height-100) {
+        let border = 0
+        if (this.shape.AABB.ymax > canvas.height-border) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+100
+            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+border
 
         }
-        if (this.shape.AABB.ymin < 100) {
+        if (this.shape.AABB.ymin < border) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymin - 100
+            this.computer.coords.values[1] -= this.shape.AABB.ymin - border
 
         }
-        if (this.shape.AABB.xmax > canvas.width-100) {
+        if (this.shape.AABB.xmax > canvas.width-border) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width+100
+            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width+border
 
         }
-        if (this.shape.AABB.xmin < 100) {
+        if (this.shape.AABB.xmin < border) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmin - 100
+            this.computer.coords.values[0] -= this.shape.AABB.xmin - border
 
         }
         let y0 = this.computer.stateVectorsToArray()
@@ -112,7 +110,7 @@ export class  PhysicsObject {
 
     draw() {
         this.shape.coords = this.coords
-        this.shape.draw(this.collision)
+        this.shape.draw()
         // this.shape.drawBoundingBox()
     }
     

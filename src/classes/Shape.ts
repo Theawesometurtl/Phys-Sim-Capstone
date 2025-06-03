@@ -6,11 +6,14 @@ export class Shape {
     momentOfInertia: number
     AABB: {xmin: number, xmax:number,ymin:number,ymax:number}
     coords: Vector
+    collision: boolean
+
 
     constructor() {
         this.momentOfInertia = 1
         this.AABB = {xmin: 1, xmax:1, ymin:1, ymax:1}
         this.coords = new Vector([0, 0])
+        this.collision = false
     }
 
 
@@ -43,7 +46,7 @@ export class Shape {
     update() {
 
     }
-    draw(collision: boolean) {
+    draw() {
 
     }
     rotationAndScalarsToMatrix(rotation: number, xscalar: number = 1, yscalar: number = 1) {
