@@ -7,6 +7,11 @@ export class Polygon extends Shape {
     absoluteVerticies: Matrix
     rotation: number
 
+    /**
+     * 
+     * @param relVertices - relative vertices of the polygon, in the form of a 2xN matrix, where N is the number of vertices
+     */
+
     constructor(relVertices: Matrix) {
         super()
         this.relVertices = relVertices

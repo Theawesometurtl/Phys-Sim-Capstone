@@ -6,6 +6,7 @@ import { Circle } from '../classes/circle';
 import { PhysicsObject } from '../classes/PhysicsObject';
 import { Matrix, Vector } from 'ts-matrix';
 import { PointMass } from '../classes/pointMass';
+import { rotationAndScalarsToMatrix } from '../VectorFunctions';
 
 
 canvas.width = window.innerWidth - 100
@@ -27,7 +28,7 @@ function main() {
   if (pressedKeys[32]) {
     circlePM.momentum = new Vector([3, -7, 0])
   }
-  let rotMatrix = circle.shape.rotationAndScalarsToMatrix(Math.atan2(circlePM.momentum.values[0],circlePM.momentum.values[1]), circlePM.momentum.length()/5, circlePM.momentum.length()/2)
+  let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(circlePM.momentum.values[0],circlePM.momentum.values[1]), circlePM.momentum.length()/5, circlePM.momentum.length()/2)
   circle.shape.drawArrow(circle.coords.values[0],circle.coords.values[1], rotMatrix)
   
 

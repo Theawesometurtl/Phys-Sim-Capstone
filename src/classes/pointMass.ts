@@ -10,6 +10,11 @@ export class PointMass extends PhysicsComputer {
     linDrag: number
     momentum: Vector
 
+    /**
+     * 
+     * @param coords - The coordinates of the point mass in 3D space.
+     */
+
     constructor(coords: Vector) {
         super(coords)
         this.velocity = new Vector([0,0,0])
@@ -34,7 +39,7 @@ export class PointMass extends PhysicsComputer {
         // console.log(array)
 
         this.coords = new Vector([array[0],array[1], array[2]])
-        this.momentum = new Vector([array[3],array[4], array[5]])
+        this.momentum = new Vector([array[3]*.95,array[4]*.95, array[5]*.95])
 
 
     }
@@ -52,7 +57,7 @@ export class PointMass extends PhysicsComputer {
         dValues[1] = y0[4]*this.invMass
         dValues[2] = y0[5]*this.invMass
         // dValues[2] = 0
-        dValues[3] = accelValues[0]
+        dValues[3] = accelValues[0] 
         dValues[4] = accelValues[1]
         // dValues[5] = 0
         dValues[5] = accelValues[2]

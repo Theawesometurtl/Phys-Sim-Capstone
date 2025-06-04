@@ -8,6 +8,11 @@ force: Vector
 momentum: Vector
 velocity: Vector
 stateVectorLength: number
+    /**
+     * Creates an instance of PhysicsComputer.
+     * @param {Vector} coords - The initial coordinates of the physics computer.
+        * @memberof PhysicsComputer
+        */
     constructor(coords: Vector) {
         this.force = new Vector([0,0, 0])
         this.momentum = new Vector([0,0, 0])

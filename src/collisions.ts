@@ -10,6 +10,7 @@ import { Rigidbody } from "./classes/rigidbody";
 
 export function generalCollisionResolver(physicsObject1: PhysicsObject, physicsObject2: PhysicsObject) {
 
+    
     physicsObject1.shape.update()
     physicsObject2.shape.update()
     if (((physicsObject1.shape.AABB.xmin < physicsObject2.shape.AABB.xmin && physicsObject1.shape.AABB.xmax > physicsObject2.shape.AABB.xmin) ||(physicsObject1.shape.AABB.xmin <physicsObject2.shape.AABB.xmax && physicsObject1.shape.AABB.xmax >physicsObject2.shape.AABB.xmax)) &&((physicsObject1.shape.AABB.ymin <physicsObject2.shape.AABB.ymin && physicsObject1.shape.AABB.ymax >physicsObject2.shape.AABB.ymin) ||(physicsObject1.shape.AABB.ymin <physicsObject2.shape.AABB.ymax && physicsObject1.shape.AABB.ymax >physicsObject2.shape.AABB.ymax))){
@@ -95,7 +96,6 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, rigidbodyComputer: R
         let projectedLine = new Vector([polygon.absoluteVerticies.values[0][i] + polygon.coords.values[0], polygon.absoluteVerticies.values[1][i] + polygon.coords.values[1]]).dot(normal)
         let projectedCircleCenter = new Vector(circle.coords.values).dot(normal)
         if ((projectedLine < projectedCircleCenter && projectedLine > projectedCircleCenter - circle.radius) ) {
-            console.log("hi")
             let intersectionProjection = projectedLine + circle.radius - projectedCircleCenter
             let intersection = normal.scale(intersectionProjection)
             let contactDistanceA = intersection.add(circlePhysicsObject.computer.coords.negate())
@@ -107,7 +107,6 @@ function polygonCircle(polygonPhysicsObject: PhysicsObject, rigidbodyComputer: R
             // generalCollision(polygon.rigidbody, circle.rigidbody, [intersectionx, intersectiony])
         }
         if ((projectedLine > projectedCircleCenter && projectedLine < projectedCircleCenter + circle.radius )) {
-            console.log("hi")
 
             let intersectionProjection = projectedLine - circle.radius - projectedCircleCenter
             let intersection = normal.scale(intersectionProjection)
@@ -129,7 +128,6 @@ function circleCircle(physicsObject1: PhysicsObject, physicsObject2: PhysicsObje
     if (centroidDifference < combinedRadius) {
         circle1.collision = true
         circle2.collision = true
-        return
         // console.log(physicsObject1.computer.momentum)
         let thing = (combinedRadius - centroidDifference)
         let normalCentroidDifference = physicsObject2.coords.add(physicsObject1.coords.negate()).normalize()

@@ -1,5 +1,6 @@
 import { Matrix, Vector } from "ts-matrix";
 import { OrdinaryDifferentialEquationSolver, StateVectorDerivatives as StateVectorAndTime, StateVectorPredictor } from "../odes";
+import { rotationAndScalarsToMatrix } from "../VectorFunctions";
 
 
 
@@ -9,6 +10,13 @@ export class Graph {
     scale: number
     rotScale: number
     curve: number[][]
+    /**
+     * Creates a new Graph object.
+     * @param canvas - The HTML canvas element to draw on.
+     * @param ctx - The 2D rendering context of the canvas.
+     * @param scale - The scale factor for the graph (default is 1).
+     * @param rotScale - The rotation scale factor (default is 1).
+     */
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, scale: number = 1, rotScale: number = 1) {
         this.canvas = canvas
         this.ctx = ctx
@@ -67,7 +75,7 @@ export class Graph {
                 // console.log([row, column], [this.canvas.width, this.canvas.  height] ,pos, coord, dxdy, rotation)
                 // let dxdyMagnitude = Math.sqrt(dxdy[0]**2+(row*-1)**2)
                 // dxdy = [dxdy[0]*3/dxdyMagnitude, (row*-1)*3/dxdyMagnitude]
-                this.drawArrow(pos[0], pos[1], this.rotationAndScalarsToMatrix(rotation), colour)
+                this.drawArrow(pos[0], pos[1], rotationAndScalarsToMatrix(rotation), colour)
             }
         }
     }
@@ -91,7 +99,7 @@ export class Graph {
                 // console.log([row, column], [this.canvas.width, this.canvas.  height] ,pos, coord, dxdy, rotation)
                 // let dxdyMagnitude = Math.sqrt(dxdy[0]**2+(row*-1)**2)
                 // dxdy = [dxdy[0]*3/dxdyMagnitude, (row*-1)*3/dxdyMagnitude]
-                this.drawArrow(pos[0], pos[1], this.rotationAndScalarsToMatrix(rotation), colour)
+                this.drawArrow(pos[0], pos[1], rotationAndScalarsToMatrix(rotation), colour)
             }
         }
     }
@@ -154,12 +162,6 @@ export class Graph {
         this.ctx.moveTo(point1[0], point1[1])
         this.ctx.lineTo(point2[0], point2[1])
         this.ctx.stroke()
-    }
-    rotationAndScalarsToMatrix(rotation: number, xscalar: number = 1, yscalar: number = 1) {
-        let rotMatrix = new Matrix(2, 2, [[Math.cos(rotation), Math.sin(rotation)], [-Math.sin(rotation), Math.cos(rotation)]])
-        let scaleMatrix = new Matrix(2, 2, [[xscalar, 0], [0, yscalar]])
-        return rotMatrix.multiply(scaleMatrix)
-
     }
 
     drawArrow(x: number, y: number, compositionMatrix: Matrix, colour: string | CanvasGradient | CanvasPattern = "red") {

@@ -14,7 +14,10 @@ export class Rigidbody extends PhysicsComputer {
     torque: Vector
     force: Vector
 
-
+    /**
+     * 
+     * @param coords - The coordinates of the rigid body in 3D space.
+     */
     constructor(coords: Vector) {
         super(coords)
         
