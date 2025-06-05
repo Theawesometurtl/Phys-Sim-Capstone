@@ -28,8 +28,10 @@ function main() {
   if (pressedKeys[32]) {
     circlePM.momentum = new Vector([3, -7, 0])
   }
-  let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(circlePM.momentum.values[0],circlePM.momentum.values[1]), circlePM.momentum.length()/5, circlePM.momentum.length()/2)
-  circle.shape.drawArrow(circle.coords.values[0],circle.coords.values[1], rotMatrix)
-  
+  let rotMatrix1 = rotationAndScalarsToMatrix(Math.atan2(circlePM.momentum.values[0],circlePM.momentum.values[1]), circlePM.momentum.length()/5, circlePM.momentum.length()/2)
+  let arrowTip = circle.shape.drawArrow(circle.coords.values[0],circle.coords.values[1], rotMatrix1)
+  circle.updateForces()
+  let rotMatrix2 = rotationAndScalarsToMatrix(Math.atan2(circlePM.force.values[0],circlePM.force.values[1]), circlePM.force.length()*4, circlePM.force.length()*10)
+  circle.shape.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2, "red")
 
 }

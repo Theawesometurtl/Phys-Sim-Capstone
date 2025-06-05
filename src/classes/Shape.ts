@@ -54,10 +54,10 @@ export class Shape {
 
     }
 
-    drawArrow(x: number, y: number, compositionMatrix: Matrix, colour: string | CanvasGradient | CanvasPattern = "red") {
+    drawArrow(x: number, y: number, compositionMatrix: Matrix, colour: string | CanvasGradient | CanvasPattern = "pink") {
         let arrow = new Matrix(2, 8,[[0, -5, 5, 1, 1, -1, -1, 5], [15, 10, 10, 10,0, 0, 10, 10]])
         let finalArrow = compositionMatrix.multiply(arrow).values
-        ctx.strokeStyle = "pink"
+        ctx.strokeStyle = colour
         ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(x + finalArrow[0][0], y + finalArrow[1][0])
@@ -66,7 +66,7 @@ export class Shape {
             // console.log(x, finalArrow[i], y, finalArrow[i])
         }
         ctx.closePath()
-        ctx.fillStyle = "pink"
+        ctx.fillStyle = colour
         ctx.stroke()
         ctx.fill()
         return [x + finalArrow[0][0], y + finalArrow[1][0]]

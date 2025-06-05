@@ -57,11 +57,11 @@ export class  PhysicsObject {
         this.coords.values[1] += adjustment[1]
     }
     
-    
-    update(frames: number) {
+    updateForces() {
+
         this.shape.coords = this.coords
         if (this.playerControlled1) {
-            let playerForce = 0.5
+            let playerForce = 1
             if (pressedKeys[87]) {
                 this.computer.force = this.computer.force.add(new Vector([0, -playerForce, 0]))
             }
@@ -91,11 +91,13 @@ export class  PhysicsObject {
             }
         }
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass/10, 0]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass/5, 0]) )  
         }
             
-            this.shape.update()
-            let border = 0
+    }
+    update(frames: number) {
+        this.shape.update()
+        let border = 0
         if (this.shape.AABB.ymax > canvas.height-border) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
             this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+border

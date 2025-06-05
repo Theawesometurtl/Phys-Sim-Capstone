@@ -7,6 +7,7 @@ import { PhysicsObject } from '../classes/PhysicsObject';
 import { generalCollisionResolver } from '../collisions';
 import { Spring } from '../classes/Spring';
 import { rotationAndScalarsToMatrix } from '../VectorFunctions';
+import { SoftBody } from '../classes/SoftBody';
 
 canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
@@ -26,44 +27,18 @@ let physicsObjectArray: PhysicsObject[] = [
 let springArray: Spring[] = [
 //   new Spring(circle1, circle2, 100, 0.001)
 ]
-const directions = [
-    [-1, -1, Math.sqrt(2)], [-1, 0, 1], [-1, 1, Math.sqrt(2)],
-    [ 0, -1, 1],          [ 0, 1, 1],
-    [ 1, -1, Math.sqrt(2)], [ 1, 0, 1], [ 1, 1, Math.sqrt(2)],
-  ];
-let columns = 2
-let rows = 2
-let spacing = 100
-let circleRatio = .25
-for (let i = 0; i < rows; i++) {
-  for (let j = 0; j < columns; j++) {
-      let circleShape = new Circle(spacing*circleRatio)
-      let particlePM: PointMass = new PointMass(new Vector([spacing + i * spacing + 0.01*spacing*j, spacing + j* spacing + 0.01*spacing*i, 0]))
-      let particle = new PhysicsObject(circleShape, particlePM, true, false, true, true)
-      physicsObjectArray[i*columns + j] = particle
-      
-    }
-}
-for (let i = 0; i < rows; i++) {
-  for (let j = 0; j < columns; j++) {
-        for (const [dx, dy, magnitude] of directions) {
 
-        const ni = i + dx;
-        const nj = j + dy;
+let softBody1 = new SoftBody(4,4,new Vector([300,300, 0]), true, true, true, true, 50)
+// let softBody2 = new SoftBody(2,3,new Vector([500,500, 0]), false, false, true, true)
 
-        // Bounds check
-        if (ni >= 0 && ni < rows && nj >= 0 && nj < columns) {
-            // Only add one direction to avoid duplicates
-            if (ni > i || (ni === i && nj > j)) {
-            let neighbor = physicsObjectArray[ni * columns + nj];
-            let particle = physicsObjectArray[i * columns + j];
-            let spring = new Spring(particle, neighbor, spacing*magnitude*1.5, 0.01*magnitude);
-            springArray.push(spring);
-            }
-        }
-        }
-    }
-}
+softBody1.physicsObjectArray.map((value: PhysicsObject) => {
+  physicsObjectArray.push(value)})
+softBody1.springArray.map((value: Spring) => {
+  springArray.push(value)})
+// softBody2.physicsObjectArray.map((value: PhysicsObject) => {
+//   physicsObjectArray.push(value)})
+// softBody2.springArray.map((value: Spring) => {
+//   springArray.push(value)})
 
 
 let interval = setInterval(() => main(), 1000/fps)
@@ -79,37 +54,28 @@ springArray.map((value: Spring, index: number) => {
   value.update()
 //   value.draw(ctx)
 })
-ctx.beginPath()
-ctx.fillStyle = "red"
-ctx.moveTo(physicsObjectArray[0].shape.coords.values[0] - spacing*(circleRatio), physicsObjectArray[0].shape.coords.values[1] - spacing*(circleRatio))
-ctx.lineTo(physicsObjectArray[1].shape.coords.values[0] - spacing*(circleRatio), physicsObjectArray[1].shape.coords.values[1] + spacing*(circleRatio))
-ctx.lineTo(physicsObjectArray[3].shape.coords.values[0] + spacing*(circleRatio), physicsObjectArray[3].shape.coords.values[1] + spacing*(circleRatio))
-ctx.lineTo(physicsObjectArray[2].shape.coords.values[0] + spacing*(circleRatio), physicsObjectArray[2].shape.coords.values[1] - spacing*(circleRatio)) 
-ctx.closePath()
-ctx.fill()
+
   physicsObjectArray.map((value: PhysicsObject, index: number) => {
       value.update(1)
     //   value.shape.draw()
   })
 
+  if (pressedKeys[32]) {
+      springArray.map((value: Spring, index: number) => {
+          value.draw(ctx)
+        })
+
+        physicsObjectArray.map((value: PhysicsObject, index: number) => {
+          value.shape.draw()
+        })
+    }
+    else {
+        softBody1.draw(ctx)
+        // softBody2.draw(ctx)
+        
+    }
 
 
-//   circle1.update(1)
-//   circle1.draw()
-//   let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, circle1PM.momentum.values[0]/5, circle1PM.momentum.values[0]/2)
-//   let rotMatrix2 = rotationAndScalarsToMatrix(0, circle1PM.momentum.values[1]/5, circle1PM.momentum.values[1]/2)
-  
-//   circle2.update(1)
-//   circle2.draw()
-//   let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(circle1PM.momentum.values[0],circle1PM.momentum.values[1]), circle1PM.momentum.length()/5, circle1PM.momentum.length()/2)
-//   if (pressedKeys[32]) {
-//     let arrowTip = circle1.shape.drawArrow(circle1.coords.values[0], circle1.coords.values[1], rotMatrix1)
-//     circle1.shape.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2)
-//   }
-//   else {
-//     circle1.shape.drawArrow(circle1.coords.values[0],circle1.coords.values[1], rotMatrix)
-
-//   }
 
 
 
