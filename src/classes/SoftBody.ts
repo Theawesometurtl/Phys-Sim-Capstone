@@ -55,7 +55,7 @@ export class SoftBody {
         for (let i = 0; i < rows; i++) {
           for (let j = 0; j < columns; j++) {
               let circleShape = new Circle(this.spacing*circleRatio)
-              let particlePM: PointMass = new PointMass((new Vector([this.spacing + i * this.spacing + 0.01*this.spacing*j, this.spacing + j* this.spacing + 0.01*this.spacing*i, 0])).add(this.coords), .95);
+              let particlePM: PointMass = new PointMass((new Vector([this.spacing + i * this.spacing + 0.01*this.spacing*j, this.spacing + j* this.spacing + 0.01*this.spacing*i, 0])).add(this.coords), .99);
               let particle = new PhysicsObject(circleShape, particlePM, playerControlled1, playerControlled2, dynamic, gravityTrue);
               this.physicsObjectArray[i*columns + j] = particle
               
