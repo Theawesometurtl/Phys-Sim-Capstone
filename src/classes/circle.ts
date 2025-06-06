@@ -38,14 +38,14 @@ export class Circle extends Shape {
         let coordArray = this.coords.values
 
         ctx.lineWidth = 2
-
+        ctx.strokeStyle = "white"
         ctx.beginPath();
         ctx.arc(coordArray[0], coordArray[1], this.radius, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.fillStyle = "blue"
-        if (this.collision) {
-            ctx.fillStyle = "red"
-        }
+        // if (this.collision) {
+        //     ctx.fillStyle = "red"
+        // }
         ctx.fill()
         ctx.fillStyle = "black"
         ctx.fillRect(coordArray[0], coordArray[1], 1, 1)

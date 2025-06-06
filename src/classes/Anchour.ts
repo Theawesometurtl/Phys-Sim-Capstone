@@ -1,15 +1,18 @@
-import { Vector } from "ts-matrix";
+import { Matrix, Vector } from "ts-matrix";
 import { PhysicsObject } from "./PhysicsObject";
 import { Shape } from "./Shape";
 import { ctx } from "../globals";
+import { Polygon } from "./polygon";
+import { PhysicsComputer } from "./PhysicsComputer";
 
-export class Anchour extends Shape {
+export class Anchour extends PhysicsObject {
     position: Vector;
     /** * Creates an instance of Anchour.
      * @param {Vector} position - The position of the anchor in 2D space.
      */
     constructor(position: Vector) {
-        super();
+        let triangle = new Polygon(new Matrix(2, 3, [[0,0], [-15, 15],[15, 15]]));
+        super(triangle, new PhysicsComputer(position), false, false, false, false);
         this.position = position;
     }
     draw(): void {

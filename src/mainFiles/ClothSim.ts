@@ -28,7 +28,7 @@ let springArray: Spring[] = [
 //   new Spring(circle1, circle2, 100, 0.001)
 ]
 
-let softBody1 = new SoftBody(4,4,new Vector([300,300, 0]), true, true, true, true, 50)
+let softBody1 = new SoftBody(4,4,new Vector([300,300, 0]), true, true, true, true, 100)
 // let softBody2 = new SoftBody(2,3,new Vector([500,500, 0]), false, false, true, true)
 
 softBody1.physicsObjectArray.map((value: PhysicsObject) => {
@@ -57,6 +57,7 @@ springArray.map((value: Spring, index: number) => {
 
   physicsObjectArray.map((value: PhysicsObject, index: number) => {
       value.update(1)
+      value.updateForces()
     //   value.shape.draw()
   })
 

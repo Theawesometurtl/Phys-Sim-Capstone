@@ -43,11 +43,11 @@ export class Spring {
         const force = delta.normalize().scale(forceMagnitude);
         
         // Apply the force to both objects
-        if (this.object1.dynamic == true) {
+        if (this.object1.dynamic) {
             this.object1.computer.force = this.object1.computer.force.add(force);
 
         }
-        if (this.object2.dynamic == true) {
+        if (this.object2.dynamic) {
             this.object2.computer.force = this.object2.computer.force.subtract(force);
         }
     }
@@ -58,7 +58,7 @@ export class Spring {
         let compositionMatrix = rotationAndScalarsToMatrix(Math.atan2(deltaPosition.values[0],deltaPosition.values[1]) - Math.PI/2, deltaPosition.length(), 50)
         
         let finalPattern = compositionMatrix.multiply(this.springPattern).values
-        ctx.strokeStyle = "red"
+        ctx.strokeStyle = "#bec3cc"
         ctx.lineWidth = 1
         ctx.moveTo(this.object1.coords.values[0] + finalPattern[0][0], this.object1.coords.values[1] + finalPattern[1][0])
         for (let i = 0; i < this.numOfPoints; i++) {

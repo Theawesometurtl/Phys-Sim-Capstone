@@ -55,7 +55,7 @@ export class SoftBody {
         for (let i = 0; i < rows; i++) {
           for (let j = 0; j < columns; j++) {
               let circleShape = new Circle(this.spacing*circleRatio)
-              let particlePM: PointMass = new PointMass((new Vector([this.spacing + i * this.spacing + 0.01*this.spacing*j, this.spacing + j* this.spacing + 0.01*this.spacing*i, 0])).add(this.coords), .99);
+              let particlePM: PointMass = new PointMass((new Vector([this.spacing + i * this.spacing + 0.01*this.spacing*j, this.spacing + j* this.spacing + 0.01*this.spacing*i, 0])).add(this.coords), .98);
               let particle = new PhysicsObject(circleShape, particlePM, playerControlled1, playerControlled2, dynamic, gravityTrue);
               this.physicsObjectArray[i*columns + j] = particle
               
@@ -74,7 +74,7 @@ export class SoftBody {
                     if (ni > i || (ni === i && nj > j)) {
                     let neighbor = this.physicsObjectArray[ni * columns + nj];
                     let particle = this.physicsObjectArray[i * columns + j];
-                    let spring = new Spring(particle, neighbor, this.spacing*magnitude*1.5, 0.01*magnitude);
+                    let spring = new Spring(particle, neighbor, this.spacing*magnitude*1.5, 0.005*magnitude);
                     this.springArray.push(spring);
                     }
                 }

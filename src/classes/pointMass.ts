@@ -24,7 +24,7 @@ export class PointMass extends PhysicsComputer {
         this.mass = 1
         this.force = new Vector([0, 0,0])
         this.invMass = this.mass**-1
-        this.linDrag = .999
+        this.linDrag = linDrag
         this.momentum = new Vector([0,0,0])
         this.stateVectorLength = 6
 

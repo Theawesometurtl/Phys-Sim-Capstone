@@ -42,12 +42,13 @@ function main() {
   }})
 
 
-
+  circle1.updateForces()
   circle1.update(1)
   circle1.draw()
   let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, circle1PM.momentum.values[0]/5, circle1PM.momentum.values[0]/2)
   let rotMatrix2 = rotationAndScalarsToMatrix(0, circle1PM.momentum.values[1]/5, circle1PM.momentum.values[1]/2)
   
+  circle2.updateForces()
   circle2.update(1)
   circle2.draw()
   let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(circle1PM.momentum.values[0],circle1PM.momentum.values[1]), circle1PM.momentum.length()/5, circle1PM.momentum.length()/2)

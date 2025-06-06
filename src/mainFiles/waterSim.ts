@@ -22,7 +22,7 @@ let rows = 10
 for (let i = 0; i < rows; i++) {
   for (let j = 0; j < columns; j++) {
     let circleShape = new Circle(10)
-    let particlePM: PointMass = new PointMass(new Vector([21 + i * 21, 21 + j* 21, 0]))
+    let particlePM: PointMass = new PointMass(new Vector([21 + i * 21 + j*0.01, 21 + j* 21 + i*0.01, 0]))
     let particle = new PhysicsObject(circleShape, particlePM, true, false, false, true)
     circleArray[i*columns + j] = particle
     physicsObjectArray[i*columns + j] = particle
@@ -68,7 +68,9 @@ interval
 function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   circleArray.map((value: PhysicsObject, index: number) => 
-    {value.update(1)
+    {
+      value.updateForces()
+      value.update(1)
     })
   // for (let i = 0; i < 1; i++) {
   //     physicsObjectArray.map((value: PhysicsObject, index: number) => {for (let i = index+1; i < physicsObjectArray.length; i++) {
