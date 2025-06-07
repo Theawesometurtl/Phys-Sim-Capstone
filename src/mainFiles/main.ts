@@ -31,6 +31,7 @@ function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
       physicsObjectArray.map((value: PhysicsObject, index: number) => 
       { 
+        value.updateForces()
         value.update(1)
         value.draw()
       })

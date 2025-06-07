@@ -11,7 +11,7 @@ canvas.width = window.innerWidth - 100
 canvas.height = window.innerHeight - 10
 
 let circleShape1 = new Circle(25)
-let sumoBot1PM: PointMass = new PointMass(new Vector([300.1, 100, 0]))
+let sumoBot1PM: PointMass = new PointMass(new Vector([347, 100, 0]))
 let sumoBot1 = new PhysicsObject(circleShape1, sumoBot1PM, true, false, true, false)
 let circleShape2 = new Circle(25)
 let sumoBot2PM: PointMass = new PointMass(new Vector([300, 300, 0]));
@@ -47,35 +47,35 @@ function main() {
   // ctx.stroke()
   // ctx.lineWidth = 2
 
-  // sumoBot1.updateForces()
-  // sumoBot1.update(1)
-  // sumoBot1.draw()
-  // let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, sumoBot1PM.momentum.values[0]/5, sumoBot1PM.momentum.values[0]/2)
-  // let rotMatrix2 = rotationAndScalarsToMatrix(0, sumoBot1PM.momentum.values[1]/5, sumoBot1PM.momentum.values[1]/2)
+  sumoBot1.updateForces()
+  sumoBot1.update(1)
+  sumoBot1.draw()
+  let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, sumoBot1PM.momentum.values[0]/5, sumoBot1PM.momentum.values[0]/2)
+  let rotMatrix2 = rotationAndScalarsToMatrix(0, sumoBot1PM.momentum.values[1]/5, sumoBot1PM.momentum.values[1]/2)
   
-  // sumoBot2.updateForces()
-  // sumoBot2.update(1)
-  // sumoBot2.draw()
-  // let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(sumoBot1PM.momentum.values[0],sumoBot1PM.momentum.values[1]), sumoBot1PM.momentum.length()/5, sumoBot1PM.momentum.length()/2)
-  // let rotMatrix3 = rotationAndScalarsToMatrix(Math.atan2(sumoBot2PM.momentum.values[0],sumoBot2PM.momentum.values[1]), sumoBot2PM.momentum.length()/5, sumoBot2PM.momentum.length()/2)
-  // if (pressedKeys[32]) {
-  //   let arrowTip = sumoBot1.shape.drawArrow(sumoBot1.coords.values[0], sumoBot1.coords.values[1], rotMatrix1)
-  //   sumoBot1.shape.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2)
-  // }
-  // else {
-  //   sumoBot1.shape.drawArrow(sumoBot1.coords.values[0],sumoBot1.coords.values[1], rotMatrix)
+  sumoBot2.updateForces()
+  sumoBot2.update(1)
+  sumoBot2.draw()
+  let rotMatrix = rotationAndScalarsToMatrix(Math.atan2(sumoBot1PM.momentum.values[0],sumoBot1PM.momentum.values[1]), sumoBot1PM.momentum.length()/5, sumoBot1PM.momentum.length()/2)
+  let rotMatrix3 = rotationAndScalarsToMatrix(Math.atan2(sumoBot2PM.momentum.values[0],sumoBot2PM.momentum.values[1]), sumoBot2PM.momentum.length()/5, sumoBot2PM.momentum.length()/2)
+  if (pressedKeys[32]) {
+    let arrowTip = sumoBot1.shape.drawArrow(sumoBot1.coords.values[0], sumoBot1.coords.values[1], rotMatrix1)
+    sumoBot1.shape.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2)
+  }
+  else {
+    sumoBot1.shape.drawArrow(sumoBot1.coords.values[0],sumoBot1.coords.values[1], rotMatrix)
 
-  // }
-  // sumoBot1.shape.drawArrow(sumoBot2.coords.values[0],sumoBot2.coords.values[1], rotMatrix3)
+  }
+  sumoBot1.shape.drawArrow(sumoBot2.coords.values[0],sumoBot2.coords.values[1], rotMatrix3)
   
-  let s =Math.abs( Math.sin(t))*totalRadius
-  let radius1 = totalRadius - s
-  let radius2 = s
-  let coordArray1 = [200, 200]
-  let coordArray2 = [300, 200]
-  let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, 0.5 + 9*radius1/totalRadius, radius1/5)
-  let rotMatrix2 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3*radius2/totalRadius, radius2/15)
-  let rotMatrix3 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3, totalRadius/15)
+  // let s =Math.abs( Math.sin(t))*totalRadius
+  // let radius1 = totalRadius - s
+  // let radius2 = s
+  // let coordArray1 = [200, 200]
+  // let coordArray2 = [300, 200]
+  // let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, 0.5 + 9*radius1/totalRadius, radius1/5)
+  // let rotMatrix2 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3*radius2/totalRadius, radius2/15)
+  // let rotMatrix3 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3, totalRadius/15)
 
         // ctx.lineWidth = 2
         // ctx.strokeStyle = "white"
@@ -105,7 +105,7 @@ function main() {
         // ctx.fillStyle = "black"
         // ctx.fillRect(coordArray2[0], coordArray2[1], 1, 1)
 
-    let arrowTip = circleShape1.drawArrow(coordArray1[0], coordArray1[1], rotMatrix1, "orange")
+    // let arrowTip = circleShape1.drawArrow(coordArray1[0], coordArray1[1], rotMatrix1, "orange")
     // circleShape2.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2)
     // circleShape1.drawArrow(coordArray1[0], coordArray1[1] + 50, rotMatrix3, "orange")
 }
