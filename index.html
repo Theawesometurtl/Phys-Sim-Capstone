@@ -11,19 +11,21 @@
         height: 100%;
       }
       canvas {
+        padding: 0;
         display: block;
       }
       * {
           margin: 0;
           padding: 0;
           box-sizing: border-box;
+          overflow: hidden;
         }
     </style>
     <script type="module" crossorigin src="/Phys-Sim-Capstone/assets/index-CIs-JUsE.js"></script>
     <link rel="stylesheet" crossorigin href="/Phys-Sim-Capstone/assets/index-BaiKPFAq.css">
   </head>
   <body>
-    <canvas height="500" width="500" id="canvas" style="border: 1px solid black;"></canvas>
+    <canvas height="500" width="500" id="canvas" style="border: 1px solid black;display: block;"></canvas>
     <div id="app"></div>
     <script src="https://unpkg.com/ts-matrix"></script>
   </body>
