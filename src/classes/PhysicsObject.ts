@@ -98,24 +98,25 @@ export class  PhysicsObject {
     update(frames: number) {
         this.shape.update()
         let border = 0
+        let safetyDistance = 0.1
         if (this.shape.AABB.ymax > canvas.height-border) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+border
+            this.computer.coords.values[1] -= this.shape.AABB.ymax - canvas.height+border + safetyDistance
             
         }
         if (this.shape.AABB.ymin < border) {
             this.computer.momentum.values[1] = -this.computer.momentum.values[1]*.99
-            this.computer.coords.values[1] -= this.shape.AABB.ymin - border
+            this.computer.coords.values[1] -= this.shape.AABB.ymin - border - safetyDistance
             
         }
         if (this.shape.AABB.xmax > canvas.width-border) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width+border
+            this.computer.coords.values[0] -= this.shape.AABB.xmax - canvas.width+border + safetyDistance
             
         }
         if (this.shape.AABB.xmin < border) {
             this.computer.momentum.values[0] = -this.computer.momentum.values[0]*.99
-            this.computer.coords.values[0] -= this.shape.AABB.xmin - border
+            this.computer.coords.values[0] -= this.shape.AABB.xmin - border - safetyDistance
             
         }
         let y0 = this.computer.stateVectorsToArray()
