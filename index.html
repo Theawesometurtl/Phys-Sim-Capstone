@@ -1,17 +1,24 @@
 <!doctype html>
 <html lang="en">
-  <head
-  margin: 0;
-  padding: 0;
-  height: 100%;>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Physics Capstone</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
     <script type="module" crossorigin src="/Phys-Sim-Capstone/assets/index-CIs-JUsE.js"></script>
     <link rel="stylesheet" crossorigin href="/Phys-Sim-Capstone/assets/index-BaiKPFAq.css">
   </head>
-  <canvas height="500" width="500" id="canvas" style="border: 1px solid black; display: block;"  ></canvas>
   <body>
+    <canvas height="500" width="500" id="canvas" style="border: 1px solid black;"></canvas>
     <div id="app"></div>
     <script src="https://unpkg.com/ts-matrix"></script>
   </body>
