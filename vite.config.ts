@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        index: resolve(__dirname, 'ClothSim.html'),
+        index: resolve(__dirname, 'blobSim.html'),
         
       },
     },
