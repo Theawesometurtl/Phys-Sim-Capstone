@@ -28,9 +28,9 @@ let interval = setInterval(() => main(), 1000/fps)
 interval
 
 const totalRadius = 100
-let t=0
+let t=.35
 function main() {
-  t+=1/100;
+  // t+=1/100;
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   physicsObjectArray.map((value: PhysicsObject, index: number) => {for (let i = index+1; i < physicsObjectArray.length; i++) {
     generalCollisionResolver(value, physicsObjectArray[i])
@@ -68,44 +68,44 @@ function main() {
   }
   sumoBot1.shape.drawArrow(sumoBot2.coords.values[0],sumoBot2.coords.values[1], rotMatrix3)
   
-  // let s =Math.abs( Math.sin(t))*totalRadius
-  // let radius1 = totalRadius - s
-  // let radius2 = s
-  // let coordArray1 = [200, 200]
-  // let coordArray2 = [300, 200]
-  // let rotMatrix1 = rotationAndScalarsToMatrix(Math.PI/2, 0.5 + 9*radius1/totalRadius, radius1/5)
-  // let rotMatrix2 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3*radius2/totalRadius, radius2/15)
-  // let rotMatrix3 = rotationAndScalarsToMatrix(Math.PI/2, .5 + 3, totalRadius/15)
+//   let s =Math.abs( Math.sin(t))*totalRadius
+//   let radius1 = totalRadius - s
+//   let radius2 = s
+//   let coordArray1 = [200, 200]
+//   let coordArray2 = [400, 250]
+//   let rotMatrix1 = rotationAndScalarsToMatrix(Math.atan2(200, 50), 0.5 + 3*radius1/totalRadius, radius1/15)
+//   let rotMatrix2 = rotationAndScalarsToMatrix(Math.atan2(-200, -50) , .5 + 3*radius2/totalRadius, radius2/15)
+//   let rotMatrix3 = rotationAndScalarsToMatrix(Math.atan2(200, 50), Math.sqrt(50**2 + 200**2)/60, Math.sqrt(50**2 + 200**2)/15)
 
-        // ctx.lineWidth = 2
-        // ctx.strokeStyle = "white"
+//         ctx.lineWidth = 2
+//         ctx.strokeStyle = "white"
 
-        // ctx.beginPath();
-        // ctx.arc(coordArray1[0], coordArray1[1], radius1, 0, 2 * Math.PI);
-        // ctx.stroke();
-        // ctx.fillStyle = "blue"
-        // // if (this.collision) {
-        // //     ctx.fillStyle = "red"
-        // // }
-        // ctx.fill()
-        // ctx.fillStyle = "black"
-        // ctx.fillRect(coordArray1[0], coordArray1[1], 1, 1)
+//         ctx.beginPath();
+//         ctx.arc(coordArray1[0], coordArray1[1], radius1, 0, 2 * Math.PI);
+//         ctx.stroke();
+//         ctx.fillStyle = "blue"
+//         // if (this.collision) {
+//         //     ctx.fillStyle = "red"
+//         // }
+//         ctx.fill()
+//         ctx.fillStyle = "black"
+//         ctx.fillRect(coordArray1[0], coordArray1[1], 1, 1)
 
-        // ctx.lineWidth = 2
-        // ctx.strokeStyle = "white"
+//         ctx.lineWidth = 2
+//         ctx.strokeStyle = "white"
 
-        // ctx.beginPath();
-        // ctx.arc(coordArray2[0], coordArray2[1], radius2, 0, 2 * Math.PI);
-        // ctx.stroke();
-        // ctx.fillStyle = "blue"
-        // // if (this.collision) {
-        // //     ctx.fillStyle = "red"
-        // // }
-        // ctx.fill()
-        // ctx.fillStyle = "black"
-        // ctx.fillRect(coordArray2[0], coordArray2[1], 1, 1)
+//         ctx.beginPath();
+//         ctx.arc(coordArray2[0], coordArray2[1], radius2, 0, 2 * Math.PI);
+//         ctx.stroke();
+//         ctx.fillStyle = "blue"
+//         // if (this.collision) {
+//         //     ctx.fillStyle = "red"
+//         // }
+//         ctx.fill()
+//         ctx.fillStyle = "black"
+//         ctx.fillRect(coordArray2[0], coordArray2[1], 1, 1)
 
-    // let arrowTip = circleShape1.drawArrow(coordArray1[0], coordArray1[1], rotMatrix1, "orange")
-    // circleShape2.drawArrow(arrowTip[0], arrowTip[1], rotMatrix2)
-    // circleShape1.drawArrow(coordArray1[0], coordArray1[1] + 50, rotMatrix3, "orange")
+//     let arrowTip = circleShape1.drawArrow(coordArray1[0], coordArray1[1], rotMatrix1, "pink")
+//     circleShape2.drawArrow(coordArray2[0], coordArray2[1], rotMatrix2)
+//     circleShape1.drawArrow(coordArray1[0] + 50*Math.cos(Math.atan2(200, 50) + Math.PI/6), coordArray1[1] + 50*Math.sin(Math.atan2(200, 50) + Math.PI/6), rotMatrix3, "orange")
 }
