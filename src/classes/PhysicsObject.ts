@@ -20,6 +20,7 @@ export class  PhysicsObject {
     computer: PhysicsComputer
     coords: Vector
     rotation: Matrix
+    gravityStrength: number
 
     /**
  * Represents a physical object in the simulation, which can be controlled by players or affected by physics forces.
@@ -36,7 +37,7 @@ export class  PhysicsObject {
  * @param gravityTrue - Whether the object is affected by gravity.
  */
 
-    constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled1: boolean, playerControlled2: boolean, dynamic: boolean, gravityTrue: boolean
+    constructor(shape: Shape = new Circle(50), computer: PhysicsComputer, playerControlled1: boolean, playerControlled2: boolean, dynamic: boolean, gravityTrue: boolean, gravityStrength: number = 0.981
      ) {
         this.computer = computer
         this.shape = shape
@@ -55,6 +56,8 @@ export class  PhysicsObject {
         this.coords = computer.coords
         this.coords.values[0] += adjustment[0]
         this.coords.values[1] += adjustment[1]
+        this.shape.coords = this.coords
+        this.gravityStrength = gravityStrength
     }
     
     updateForces() {
@@ -91,7 +94,7 @@ export class  PhysicsObject {
             }
         }
         if (this.gravityTrue) {
-            this.computer.force = this.computer.force.add(new Vector([0,-gravity*this.mass/5, 0]) )  
+            this.computer.force = this.computer.force.add(new Vector([0,this.gravityStrength*this.mass/5, 0]) )  
         }
             
     }

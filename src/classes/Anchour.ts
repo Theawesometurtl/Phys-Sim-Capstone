@@ -11,6 +11,7 @@ export class Anchour extends PhysicsObject {
      * @param {Vector} position - The position of the anchor in 2D space.
      */
     constructor(position: Vector) {
+        
         let triangle = new Polygon(new Matrix(2, 3, [[0,0], [-15, 15],[15, 15]]));
         super(triangle, new PhysicsComputer(position), false, false, false, false);
         this.position = position;
@@ -27,6 +28,12 @@ export class Anchour extends PhysicsObject {
         ctx.fill();
         ctx.closePath();
         ctx.stroke();
+    }
+    update(frames: number): void {
+        //do nothing, the anchor does not move
+    }
+    updateForces(): void {
+        //do nothing, the anchor does not move
     }
 
 

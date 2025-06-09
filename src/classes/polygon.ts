@@ -109,20 +109,20 @@ export class Polygon extends Shape {
             ctx.fillStyle = "red"
         }
         ctx.fill()
-        ctx.fillStyle = "black"
-        ctx.fillRect(coordArray[0], coordArray[1], 1, 1)
-        ctx.fillRect(this.absoluteVerticies.values[0][0] + coordArray[0]-5, this.absoluteVerticies.values[1][0] + coordArray[1]-5, 10, 10)
-        ctx.fillStyle = "red"
-        ctx.fillRect(this.absoluteVerticies.values[0][1]  + coordArray[0]-5, this.absoluteVerticies.values[1][1] + coordArray[1]-5, 10, 10)
-        ctx.strokeStyle = "red"
-        ctx.beginPath()
-        let point1 = [this.absoluteVerticies.values[0][3%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][3%this.absoluteVerticies.columns]]
-        let point2 = [this.absoluteVerticies.values[0][4%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][4%this.absoluteVerticies.columns]]
-        let normal = this.getNormalVector(point1, point2).values
-        let lineCenterx = (point1[0] + point2[0])/2
-        let lineCentery = (point1[1] + point2[1])/2
-        ctx.moveTo(normal[0]*50 + coordArray[0] +lineCenterx, normal[1]*50 + coordArray[1] +lineCentery)
-        ctx.lineTo(coordArray[0] +lineCenterx, coordArray[1] +lineCentery)
+        // ctx.fillStyle = "black"
+        // ctx.fillRect(coordArray[0], coordArray[1], 1, 1)
+        // ctx.fillRect(this.absoluteVerticies.values[0][0] + coordArray[0]-5, this.absoluteVerticies.values[1][0] + coordArray[1]-5, 10, 10)
+        // ctx.fillStyle = "red"
+        // ctx.fillRect(this.absoluteVerticies.values[0][1]  + coordArray[0]-5, this.absoluteVerticies.values[1][1] + coordArray[1]-5, 10, 10)
+        // ctx.strokeStyle = "red"
+        // ctx.beginPath()
+        // let point1 = [this.absoluteVerticies.values[0][3%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][3%this.absoluteVerticies.columns]]
+        // let point2 = [this.absoluteVerticies.values[0][4%this.absoluteVerticies.columns], this.absoluteVerticies.values[1][4%this.absoluteVerticies.columns]]
+        // let normal = this.getNormalVector(point1, point2).values
+        // let lineCenterx = (point1[0] + point2[0])/2
+        // let lineCentery = (point1[1] + point2[1])/2
+        // ctx.moveTo(normal[0]*50 + coordArray[0] +lineCenterx, normal[1]*50 + coordArray[1] +lineCentery)
+        // ctx.lineTo(coordArray[0] +lineCenterx, coordArray[1] +lineCentery)
         ctx.stroke()
         
     }
