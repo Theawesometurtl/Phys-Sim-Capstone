@@ -15,6 +15,7 @@ export class SoftBody {
     dynamic: boolean;
     gravityTrue: boolean;
     face: boolean;
+    springsOn: boolean;
     /**
      * Represents a soft body simulation with a grid of point masses connected by springs.
      * The soft body can be controlled by players and can be dynamic or static.
@@ -35,6 +36,7 @@ export class SoftBody {
      */
     constructor(gridColumns: number = 2, gridRows: number = 2, coords: Vector = new Vector([100, 100, 0]), playerControlled1: boolean =true, playerControlled2: boolean = true, dynamic: boolean = true, gravityTrue: boolean = true, spacing: number = 100) {
         this.face = true;
+        this.springsOn = true
         this.playerControlled1 = playerControlled1;
         this.playerControlled2 = playerControlled2;
         this.dynamic = dynamic;
@@ -82,24 +84,36 @@ export class SoftBody {
             }
         }
     }
-    draw(ctx: CanvasRenderingContext2D): void {
-        let centroid = this.centroidCalc()
-        ctx.beginPath()
-        ctx.fillStyle = "blue"
-        this.findOutsidePoints().map((point: number[]) => {
-            let newPoint = (new Vector(point)).subtract(centroid).normalize().scale(this.spacing*this.circleRatio*2).add(new Vector(point)).values
-            ctx.lineTo(newPoint[0], newPoint[1])
+    draw(ctx: CanvasRenderingContext2D, colour: string | CanvasGradient | CanvasPattern = "blue", skeleton: boolean): void {
+        if (!skeleton){
+            let centroid = this.centroidCalc()
+            ctx.beginPath()
+            ctx.fillStyle = colour
+            this.findOutsidePoints().map((point: number[]) => {
+                let newPoint = (new Vector(point)).subtract(centroid).normalize().scale(this.spacing*this.circleRatio*2).add(new Vector(point)).values
+                ctx.lineTo(newPoint[0], newPoint[1])
+                })
+            ctx.closePath()
+            ctx.fill()
+            if (this.face) {
+                ctx.fillStyle = "black"
+                ctx.fillRect(centroid.values[0]-20, centroid.values[1] - 20, 10, 10);
+                ctx.fillRect(centroid.values[0]+20, centroid.values[1] - 20, 10, 10);
+                ctx.fillRect(centroid.values[0]-40, centroid.values[1]+10, 80, 10);
+
+            }
+        } else {
+            this.physicsObjectArray.map((value: PhysicsObject, index: number) => {
+                value.shape.draw(colour)
+                
             })
-        ctx.closePath()
-        ctx.fill()
-        if (this.face) {
-            ctx.fillStyle = "black"
-            ctx.fillRect(centroid.values[0]-20, centroid.values[1] - 20, 10, 10);
-            ctx.fillRect(centroid.values[0]+20, centroid.values[1] - 20, 10, 10);
-            ctx.fillRect(centroid.values[0]-40, centroid.values[1]+10, 80, 10);
-
+            
+            if (this.springsOn) {
+                this.springArray.map((value: Spring, index: number) => {
+                    value.draw(ctx)
+                })
+            }
         }
-
     }
     cross(p1: number[], p2: number[], p3: number[]): number {
         // Calculate the cross product of vectors p1p2 and p1p3
@@ -132,10 +146,11 @@ export class SoftBody {
         this.physicsObjectArray.map((value: PhysicsObject) => {
             value.update(1);
         });
-        this.springArray.map((value: Spring) => {
-            value.update();
-        });
-
+        if (this.springsOn){
+            this.springArray.map((value: Spring) => {
+                value.update();
+            });
+        }
     }
     centroidCalc(): Vector {
         let x: number = 0;

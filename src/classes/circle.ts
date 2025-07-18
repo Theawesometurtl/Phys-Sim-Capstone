@@ -34,7 +34,7 @@ export class Circle extends Shape {
         return (Math.PI*(this.radius**4))/4
     }
 
-    draw() {
+    draw(colour: string | CanvasGradient | CanvasPattern = "blue") {
         let coordArray = this.coords.values
 
         ctx.lineWidth = 2
@@ -42,7 +42,7 @@ export class Circle extends Shape {
         ctx.beginPath();
         ctx.arc(coordArray[0], coordArray[1], this.radius, 0, 2 * Math.PI);
         ctx.stroke();
-        ctx.fillStyle = "blue"
+        ctx.fillStyle = colour
         // if (this.collision) {
         //     ctx.fillStyle = "red"
         // }

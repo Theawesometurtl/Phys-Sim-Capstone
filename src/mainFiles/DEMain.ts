@@ -32,8 +32,9 @@ let canvasHeightDifference = -canvas.height +canvas2.height
 function main() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   circle.update(1)
+  circle.updateForces()
   circle.draw()
-  point = graph.coordinateToPosition([circlePM.momentum.values[1]*1,0])
+  point = graph.coordinateToPosition([circlePM.momentum.values[1]*5,0])
   graph.continueCurve([point[0], circlePM.coords.values[1] + canvasHeightDifference + 50])
   // console.log(point, circlePM.momentum)
   timer = 0

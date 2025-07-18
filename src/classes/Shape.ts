@@ -50,8 +50,8 @@ export class Shape {
     update() {
 
     }
-    draw() {
-
+    draw(colour: string | CanvasGradient | CanvasPattern = "blue") {
+        
     }
 
     drawArrow(x: number, y: number, compositionMatrix: Matrix, colour: string | CanvasGradient | CanvasPattern = "pink") {
