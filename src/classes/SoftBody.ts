@@ -15,6 +15,7 @@ export class SoftBody {
     dynamic: boolean;
     gravityTrue: boolean;
     face: boolean;
+    faceType: boolean;
     springsOn: boolean;
     /**
      * Represents a soft body simulation with a grid of point masses connected by springs.
@@ -46,6 +47,7 @@ export class SoftBody {
         this.circleRatio = 0.25;
         this.physicsObjectArray= []
         this.springArray= []
+        this.faceType = Math.random() > 0.3;
         const directions = [
             [-1, -1, Math.sqrt(2)], [-1, 0, 1], [-1, 1, Math.sqrt(2)],
             [ 0, -1, 1],          [ 0, 1, 1],
@@ -97,9 +99,41 @@ export class SoftBody {
             ctx.fill()
             if (this.face) {
                 ctx.fillStyle = "black"
-                ctx.fillRect(centroid.values[0]-20, centroid.values[1] - 20, 10, 10);
-                ctx.fillRect(centroid.values[0]+20, centroid.values[1] - 20, 10, 10);
-                ctx.fillRect(centroid.values[0]-40, centroid.values[1]+10, 80, 10);
+                let eye1 = [new Vector([-20, -20]),
+                            new Vector([-10, -20]),
+                            new Vector([-10, -10]),
+                            new Vector([-20, -10])];
+                let eye2 = [new Vector([20, -20]),
+                            new Vector([10, -20]),
+                            new Vector([10, -10]),
+                            new Vector([20, -10])];
+                let mouth1 = [new Vector([-40, 10]),
+                            new Vector([40, 10]),
+                            new Vector([40, 20]),
+                            new Vector([-40, 20])];
+                let mouth2 = [new Vector([0, 30]),
+                            new Vector([15, 5]),
+                            new Vector([-15, 5]),
+                            new Vector([0, 30]),
+                            new Vector([0, 25]),
+                            new Vector([10, 10]),
+                            new Vector([-10, 10]),
+                            new Vector([0, 25])
+                        ];
+                let face1;
+                if (this.faceType) {
+                    face1 = [eye1, eye2, mouth1];
+                    
+                } else {
+                    face1 = [eye1, eye2, mouth2];
+
+                }
+                
+
+                this.drawShapes(ctx, face1, centroid);
+                // ctx.fillRect(centroid.values[0]-20, centroid.values[1] - 20, 10, 10);
+                // ctx.fillRect(centroid.values[0]+20, centroid.values[1] - 20, 10, 10);
+                // ctx.fillRect(centroid.values[0]-40, centroid.values[1]+10, 80, 10);
 
             }
         } else {
@@ -162,6 +196,24 @@ export class SoftBody {
         x = x / this.physicsObjectArray.length;
         y = y / this.physicsObjectArray.length;
         return new Vector([x, y]);
+    }
+    drawShapes(ctx: CanvasRenderingContext2D, coordinates: Vector[][], centroid: Vector) : void {
+        // console.log(coordinates)
+        for (let i=0; i<coordinates.length; i++) {
+            ctx.beginPath();
+            ctx.moveTo(coordinates[i][0].values[0] + centroid.values[0], coordinates[i][0].values[1] + centroid.values[1])
+            // console.log(coordinates[i][0].values[0], coordinates[i][0].values[1])
+            for (let j=1; j<coordinates[i].length; j++) {
+                ctx.fillStyle = "black";
+                ctx.lineWidth = 0;
+                // ctx.fillRect(coordinates[i][j].values[0] + centroid.values[0], coordinates[i][j].values[1]+ centroid.values[1], 1, 1)
+                // console.log(coordinates[i][j].values[0] + centroid.values[0], coordinates[i][j].values[1]+ centroid.values[1])
+                ctx.lineTo(coordinates[i][j].values[0] + centroid.values[0], coordinates[i][j].values[1]+ centroid.values[1])
+            }
+            ctx.closePath()
+            ctx.stroke();
+            ctx.fill();
+        }
     }
 
 }
